@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:wefamily/l10n/generated/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wefamily/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/colors.dart';
+import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_button.dart';
 import '../../core/widgets/language_switcher.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _controller = PageController();
   int _index = 0;
 
@@ -23,11 +26,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  void _next(AppLocalizations l10n) {
+  Future<void> _next(AppLocalizations l10n) async {
     if (_index < 2) {
-      _controller.nextPage(duration: 350.ms, curve: Curves.easeOutCubic);
+      await _controller.nextPage(duration: 350.ms, curve: Curves.easeOutCubic);
     } else {
-      // TODO(auth): navigate to login
+      await ref.read(sessionProvider.notifier).completeOnboarding();
+      if (mounted) context.go('/login');
     }
   }
 

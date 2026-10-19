@@ -1,0 +1,175 @@
+import '../models/models.dart';
+
+class MockData {
+  static final AppUser currentUser = AppUser(
+    id: 'u1',
+    name: 'Ahmed Al-Farsi',
+    phone: '+966501234567',
+    language: 'en',
+  );
+
+  static final FamilyCircle circle = FamilyCircle(
+    id: 'c1',
+    name: 'Al-Farsi Family',
+    ownerUid: 'u1',
+    inviteCode: 'K7M2P9',
+    memberUids: const ['u1', 'u2', 'u3', 'u4', 'u5'],
+  );
+
+  static final List<CircleMember> members = [
+    CircleMember(
+      uid: 'u1',
+      name: 'Ahmed Al-Farsi',
+      relation: 'father',
+      role: 'owner',
+      lat: 24.7136,
+      lng: 46.6753,
+      batteryLevel: 82,
+      placeLabel: 'Home',
+      lastUpdated: DateTime.now().subtract(const Duration(minutes: 2)),
+    ),
+    CircleMember(
+      uid: 'u2',
+      name: 'Fatima Al-Farsi',
+      relation: 'wife',
+      lat: 24.7200,
+      lng: 46.6800,
+      batteryLevel: 45,
+      placeLabel: 'Office',
+      lastUpdated: DateTime.now().subtract(const Duration(minutes: 5)),
+    ),
+    CircleMember(
+      uid: 'u3',
+      name: 'Omar Al-Farsi',
+      relation: 'son',
+      lat: 24.7050,
+      lng: 46.6680,
+      batteryLevel: 15,
+      placeLabel: 'School',
+      lastUpdated: DateTime.now().subtract(const Duration(minutes: 12)),
+    ),
+    CircleMember(
+      uid: 'u4',
+      name: 'Layla Al-Farsi',
+      relation: 'daughter',
+      lat: 24.7150,
+      lng: 46.6900,
+      batteryLevel: 91,
+      placeLabel: 'Home',
+      lastUpdated: DateTime.now().subtract(const Duration(minutes: 1)),
+    ),
+    CircleMember(
+      uid: 'u5',
+      name: 'Khalid Al-Farsi',
+      relation: 'brother',
+      sharingLocation: false,
+      ghostMode: true,
+      lat: 24.7300,
+      lng: 46.7000,
+      batteryLevel: 67,
+      placeLabel: 'Unknown',
+      lastUpdated: DateTime.now().subtract(const Duration(hours: 2)),
+    ),
+  ];
+
+  static final List<ChatMessage> messages = [
+    ChatMessage(
+      id: 'm1',
+      senderUid: 'u2',
+      senderName: 'Fatima',
+      type: 'text',
+      text: 'Reached the office safely 🏢',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
+    ),
+    ChatMessage(
+      id: 'm2',
+      senderUid: 'u1',
+      senderName: 'Ahmed',
+      type: 'text',
+      text: 'Great! Omar is still at school',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 25)),
+    ),
+    ChatMessage(
+      id: 'm3',
+      senderUid: 'u3',
+      senderName: 'Omar',
+      type: 'location',
+      lat: 24.7050,
+      lng: 46.6680,
+      createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
+    ),
+    ChatMessage(
+      id: 'm4',
+      senderUid: 'u4',
+      senderName: 'Layla',
+      type: 'text',
+      text: 'Coming home in 20 min',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
+    ),
+  ];
+
+  static final List<TreePerson> persons = [
+    const TreePerson(id: 'p1', name: 'Abdullah Al-Farsi', gender: 'male', generation: 0),
+    const TreePerson(id: 'p2', name: 'Mariam Al-Farsi', gender: 'female', generation: 0),
+    const TreePerson(id: 'p3', name: 'Ahmed Al-Farsi', gender: 'male', generation: 1, linkedUid: 'u1'),
+    const TreePerson(id: 'p4', name: 'Fatima Al-Farsi', gender: 'female', generation: 1, linkedUid: 'u2'),
+    const TreePerson(id: 'p5', name: 'Khalid Al-Farsi', gender: 'male', generation: 1, linkedUid: 'u5'),
+    const TreePerson(id: 'p6', name: 'Sara Al-Farsi', gender: 'female', generation: 1),
+    const TreePerson(id: 'p7', name: 'Omar Al-Farsi', gender: 'male', generation: 2, linkedUid: 'u3'),
+    const TreePerson(id: 'p8', name: 'Layla Al-Farsi', gender: 'female', generation: 2, linkedUid: 'u4'),
+    const TreePerson(id: 'p9', name: 'Youssef Al-Farsi', gender: 'male', generation: 2),
+    const TreePerson(id: 'p10', name: 'Noor Al-Farsi', gender: 'female', generation: 2),
+    const TreePerson(id: 'p11', name: 'Hassan Al-Farsi', gender: 'male', generation: 2),
+    const TreePerson(id: 'p12', name: 'Aisha Al-Farsi', gender: 'female', generation: 2),
+  ];
+
+  static final List<TreeRelation> relations = [
+    const TreeRelation(fromPersonId: 'p1', toPersonId: 'p3', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p2', toPersonId: 'p3', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p1', toPersonId: 'p5', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p2', toPersonId: 'p5', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p1', toPersonId: 'p6', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p2', toPersonId: 'p6', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p3', toPersonId: 'p4', type: 'spouse', label: 'wife'),
+    const TreeRelation(fromPersonId: 'p5', toPersonId: 'p6', type: 'spouse', label: 'husband'),
+    const TreeRelation(fromPersonId: 'p3', toPersonId: 'p7', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p4', toPersonId: 'p7', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p3', toPersonId: 'p8', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p4', toPersonId: 'p8', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p3', toPersonId: 'p9', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p4', toPersonId: 'p9', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p5', toPersonId: 'p10', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p6', toPersonId: 'p10', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p5', toPersonId: 'p11', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p6', toPersonId: 'p11', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p5', toPersonId: 'p12', type: 'parent', label: 'father'),
+    const TreeRelation(fromPersonId: 'p6', toPersonId: 'p12', type: 'parent', label: 'mother'),
+    const TreeRelation(fromPersonId: 'p7', toPersonId: 'p8', type: 'sibling', label: 'brother'),
+    const TreeRelation(fromPersonId: 'p7', toPersonId: 'p9', type: 'sibling', label: 'brother'),
+    const TreeRelation(fromPersonId: 'p8', toPersonId: 'p9', type: 'sibling', label: 'sister'),
+  ];
+
+  static final List<AppNotification> notifications = [
+    AppNotification(
+      id: 'n1',
+      title: 'Omar arrived at School',
+      body: 'Battery low (15%)',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 12)),
+      icon: 'location_on',
+    ),
+    AppNotification(
+      id: 'n2',
+      title: 'Fatima shared her location',
+      body: 'Office · 5 min ago',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
+      icon: 'share_location',
+    ),
+    AppNotification(
+      id: 'n3',
+      title: 'Layla checked in',
+      body: 'Arrived Home safely',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 1)),
+      icon: 'home',
+    ),
+  ];
+}

@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/auth/login_screen.dart';
+import '../features/auth/otp_screen.dart';
+import '../features/auth/profile_setup_screen.dart';
+import '../features/circle/circle_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
+import '../features/shell/main_shell.dart';
 import '../features/splash/splash_screen.dart';
 
 class AppRouter {
@@ -18,26 +22,27 @@ class AppRouter {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Login'),
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/otp',
+        builder: (context, state) {
+          final phone = state.uri.queryParameters['phone'] ?? '';
+          return OtpScreen(phone: phone);
+        },
+      ),
+      GoRoute(
+        path: '/profile-setup',
+        builder: (context, state) => const ProfileSetupScreen(),
+      ),
+      GoRoute(
+        path: '/circle',
+        builder: (context, state) => const CircleScreen(),
       ),
       GoRoute(
         path: '/home',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Home'),
+        builder: (context, state) => const MainShell(),
       ),
     ],
   );
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text(title)),
-    );
-  }
 }

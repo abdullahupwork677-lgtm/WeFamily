@@ -1,24 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:wefamily/l10n/generated/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wefamily/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/colors.dart';
+import '../../core/utils/session_provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1800), () {
-      if (mounted) context.go('/onboarding');
-    });
+    Future.delayed(const Duration(milliseconds: 1500), _navigate);
+  }
+
+  void _navigate() {
+    if (!mounted) return;
+    final session = ref.read(sessionProvider);
+    if (session.isLoggedIn && session.hasCircle) {
+      context.go('/home');
+    } else if (session.isLoggedIn) {
+      context.go('/circle');
+    } else if (session.onboardingSeen) {
+      context.go('/login');
+    } else {
+      context.go('/onboarding');
+    }
   }
 
   @override
