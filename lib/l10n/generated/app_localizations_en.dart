@@ -359,4 +359,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sosDemoNote => 'Demo mode — no real alerts sent';
+
+  @override
+  String get premiumTitle => 'Unlock premium features for free';
+
+  @override
+  String get startFreeTrial => 'Start free trial';
+
+  @override
+  String get checkIn => 'Check in';
+
+  @override
+  String get checkInSent => 'Check-in sent to your family';
+
+  @override
+  String get addPlace => 'Add place';
+
+  @override
+  String get placeNameHint => 'Place name';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get hereFor => 'Here for';
+
+  @override
+  String get driving => 'Driving';
+
+  @override
+  String get moving => 'Moving';
+
+  @override
+  String get locationNotUpdating => 'Location not updating';
+
+  @override
+  String get mapLayers => 'Map layers';
+
+  @override
+  String get lightMap => 'Light';
+
+  @override
+  String get standardMap => 'Standard';
+
+  @override
+  String get satelliteMap => 'Satellite';
+
+  @override
+  String get fitAllMembers => 'Fit all family members';
+
+  @override
+  String get shareInviteTipTitle => 'Keep everyone in the loop';
+
+  @override
+  String get shareInviteTipBody =>
+      'Share your invite code so family can join your circle.';
+
+  @override
+  String speedKmh(int speed) {
+    return '$speed km/h';
+  }
+
+  @override
+  String durationDaysHours(int days, int hours) {
+    return '$days d, $hours hrs';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours hrs $minutes min';
+  }
+
+  @override
+  String updatedAgo(int minutes) {
+    return 'Updated $minutes min ago';
+  }
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes min';
+  }
 }

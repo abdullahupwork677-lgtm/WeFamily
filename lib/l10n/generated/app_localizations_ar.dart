@@ -357,4 +357,87 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get sosDemoNote => 'وضع تجريبي — لا تُرسل تنبيهات حقيقية';
+
+  @override
+  String get premiumTitle => 'افتح الميزات المميزة مجانًا';
+
+  @override
+  String get startFreeTrial => 'ابدأ التجربة المجانية';
+
+  @override
+  String get checkIn => 'تسجيل وصول';
+
+  @override
+  String get checkInSent => 'تم إرسال تسجيل الوصول إلى عائلتك';
+
+  @override
+  String get addPlace => 'إضافة مكان';
+
+  @override
+  String get placeNameHint => 'اسم المكان';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get hereFor => 'موجود منذ';
+
+  @override
+  String get driving => 'يقود';
+
+  @override
+  String get moving => 'يتحرك';
+
+  @override
+  String get locationNotUpdating => 'الموقع لا يتم تحديثه';
+
+  @override
+  String get mapLayers => 'طبقات الخريطة';
+
+  @override
+  String get lightMap => 'فاتح';
+
+  @override
+  String get standardMap => 'قياسي';
+
+  @override
+  String get satelliteMap => 'قمر صناعي';
+
+  @override
+  String get fitAllMembers => 'عرض جميع أفراد العائلة';
+
+  @override
+  String get shareInviteTipTitle => 'أبقِ الجميع على اطلاع';
+
+  @override
+  String get shareInviteTipBody =>
+      'شارك رمز الدعوة ليتمكن أفراد عائلتك من الانضمام إلى دائرتك.';
+
+  @override
+  String speedKmh(int speed) {
+    return '$speed كم/س';
+  }
+
+  @override
+  String durationDaysHours(int days, int hours) {
+    return '$days يوم، $hours ساعة';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours ساعة $minutes دقيقة';
+  }
+
+  @override
+  String updatedAgo(int minutes) {
+    return 'آخر تحديث قبل $minutes دقيقة';
+  }
+
+  @override
+  String get justNow => 'الآن';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes دقيقة';
+  }
 }

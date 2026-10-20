@@ -67,6 +67,10 @@ class CircleMember {
     this.batteryLevel,
     this.placeLabel,
     this.lastUpdated,
+    this.isMoving = false,
+    this.speedKmh,
+    this.headingDeg,
+    this.sinceAt,
   });
 
   final String uid;
@@ -81,6 +85,12 @@ class CircleMember {
   final int? batteryLevel;
   final String? placeLabel;
   final DateTime? lastUpdated;
+  final bool isMoving;
+  final double? speedKmh;
+  final double? headingDeg;
+
+  /// When the member arrived at the current place (drives "Here for").
+  final DateTime? sinceAt;
 
   CircleMember copyWith({
     bool? sharingLocation,
@@ -90,6 +100,10 @@ class CircleMember {
     int? batteryLevel,
     String? placeLabel,
     DateTime? lastUpdated,
+    bool? isMoving,
+    double? speedKmh,
+    double? headingDeg,
+    DateTime? sinceAt,
   }) {
     return CircleMember(
       uid: uid,
@@ -104,6 +118,10 @@ class CircleMember {
       batteryLevel: batteryLevel ?? this.batteryLevel,
       placeLabel: placeLabel ?? this.placeLabel,
       lastUpdated: lastUpdated ?? this.lastUpdated,
+      isMoving: isMoving ?? this.isMoving,
+      speedKmh: speedKmh ?? this.speedKmh,
+      headingDeg: headingDeg ?? this.headingDeg,
+      sinceAt: sinceAt ?? this.sinceAt,
     );
   }
 }

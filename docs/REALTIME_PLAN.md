@@ -160,3 +160,22 @@ circles/{circleId}/messages/{id} -> {senderId, text, type, lat, lng, createdAt}
   - "Location off — tap to retry" glass chip when permission/GPS unavailable
   - Family-wide sharing still needs Firestore (waiting on `android/app/google-services.json`)
 - 2026-10-20: Still waiting on `android/app/google-services.json` for Firebase (login/signup next).
+
+- 2026-10-20: **Task 1 shipped (map speed)**. Cause of the slowdown: Mapbox raster tiles had no disk
+  cache (full re-download on every launch/style switch), every GPS fix rebuilt the whole map screen,
+  every marker ran an infinite pulse animation, and trail points were recomputed in `build()`.
+  Fixes: disk tile cache (`lib/core/services/tile_cache.dart`, 250 MB, LRU-ish trim), cached last
+  position as initial center, position stream throttled to 1/s, `RepaintBoundary` per marker,
+  pulse only on the current user, shimmer skeleton until the first tiles settle.
+- 2026-10-20: **Task 2 shipped (Soft UI restyle)**: borderless white cards with black 8% soft shadow
+  (blur 24, y8), softer inputs, pill buttons (primary gradient + secondary grey) with tap-scale,
+  borderless pill tabs with soft shadows, rounded white bottom nav (purple active), 32px bottom
+  sheets, `SoftIllustration` placeholder (TODO asset).
+- 2026-10-20: **Task 3 shipped (home map rebuild, reference-matched)**: CARTO Positron light tiles
+  (configurable in `config.dart`), avatar markers with white ring + pin tail/dot anchored at the
+  coordinate, heading cone for moving members, "Here for / Driving km/h" bubbles with place icon,
+  low-battery badge, self pulse halo + accuracy circle, animated marker movement (800 ms),
+  Google-style overlays (settings, circle pill, invites/chat, add place, recenter, layers sheet with
+  fit-all), Check in / SOS pills, 3-snap draggable sheet with premium banner, icon tabs, member
+  cards, invite tip card and add-person card. Home shortcuts switch the shell tab via
+  `shellTabProvider`.

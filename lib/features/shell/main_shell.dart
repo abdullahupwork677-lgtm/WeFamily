@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/colors.dart';
@@ -7,31 +8,26 @@ import '../home/home_screen.dart';
 import '../safety/safety_screen.dart';
 import '../settings/settings_screen.dart';
 import '../tree/tree_screen.dart';
+import 'shell_tab_provider.dart';
 
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerWidget {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
-}
-
-class _MainShellState extends State<MainShell> {
-  int _index = 0;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final int index = ref.watch(shellTabProvider);
 
-    final screens = [
-      const HomeScreen(),
-      const TreeScreen(),
-      const SafetyScreen(),
-      const ChatScreen(),
-      const SettingsScreen(),
+    const screens = [
+      HomeScreen(),
+      TreeScreen(),
+      SafetyScreen(),
+      ChatScreen(),
+      SettingsScreen(),
     ];
 
     return Scaffold(
-      body: IndexedStack(index: _index, children: screens),
+      body: IndexedStack(index: index, children: screens),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -48,36 +44,41 @@ class _MainShellState extends State<MainShell> {
                   icon: Icons.location_on_outlined,
                   activeIcon: Icons.location_on,
                   label: l10n.location,
-                  selected: _index == 0,
-                  onTap: () => setState(() => _index = 0),
+                  selected: index == 0,
+                  onTap: () =>
+                      ref.read(shellTabProvider.notifier).select(0),
                 ),
                 _NavItem(
                   icon: Icons.account_tree_outlined,
                   activeIcon: Icons.account_tree,
                   label: l10n.tree,
-                  selected: _index == 1,
-                  onTap: () => setState(() => _index = 1),
+                  selected: index == 1,
+                  onTap: () =>
+                      ref.read(shellTabProvider.notifier).select(1),
                 ),
                 _NavItem(
                   icon: Icons.shield_outlined,
                   activeIcon: Icons.shield,
                   label: l10n.safety,
-                  selected: _index == 2,
-                  onTap: () => setState(() => _index = 2),
+                  selected: index == 2,
+                  onTap: () =>
+                      ref.read(shellTabProvider.notifier).select(2),
                 ),
                 _NavItem(
                   icon: Icons.chat_bubble_outline,
                   activeIcon: Icons.chat_bubble,
                   label: l10n.chat,
-                  selected: _index == 3,
-                  onTap: () => setState(() => _index = 3),
+                  selected: index == 3,
+                  onTap: () =>
+                      ref.read(shellTabProvider.notifier).select(3),
                 ),
                 _NavItem(
                   icon: Icons.person_outline,
                   activeIcon: Icons.person,
                   label: l10n.profile,
-                  selected: _index == 4,
-                  onTap: () => setState(() => _index = 4),
+                  selected: index == 4,
+                  onTap: () =>
+                      ref.read(shellTabProvider.notifier).select(4),
                 ),
               ],
             ),

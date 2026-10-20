@@ -781,6 +781,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Demo mode — no real alerts sent'**
   String get sosDemoNote;
+
+  /// No description provided for @premiumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock premium features for free'**
+  String get premiumTitle;
+
+  /// No description provided for @startFreeTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Start free trial'**
+  String get startFreeTrial;
+
+  /// No description provided for @checkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get checkIn;
+
+  /// No description provided for @checkInSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in sent to your family'**
+  String get checkInSent;
+
+  /// No description provided for @addPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Add place'**
+  String get addPlace;
+
+  /// No description provided for @placeNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Place name'**
+  String get placeNameHint;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @hereFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Here for'**
+  String get hereFor;
+
+  /// No description provided for @driving.
+  ///
+  /// In en, this message translates to:
+  /// **'Driving'**
+  String get driving;
+
+  /// No description provided for @moving.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving'**
+  String get moving;
+
+  /// No description provided for @locationNotUpdating.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not updating'**
+  String get locationNotUpdating;
+
+  /// No description provided for @mapLayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Map layers'**
+  String get mapLayers;
+
+  /// No description provided for @lightMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get lightMap;
+
+  /// No description provided for @standardMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get standardMap;
+
+  /// No description provided for @satelliteMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite'**
+  String get satelliteMap;
+
+  /// No description provided for @fitAllMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit all family members'**
+  String get fitAllMembers;
+
+  /// No description provided for @shareInviteTipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep everyone in the loop'**
+  String get shareInviteTipTitle;
+
+  /// No description provided for @shareInviteTipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your invite code so family can join your circle.'**
+  String get shareInviteTipBody;
+
+  /// No description provided for @speedKmh.
+  ///
+  /// In en, this message translates to:
+  /// **'{speed} km/h'**
+  String speedKmh(int speed);
+
+  /// No description provided for @durationDaysHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} d, {hours} hrs'**
+  String durationDaysHours(int days, int hours);
+
+  /// No description provided for @durationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hrs {minutes} min'**
+  String durationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @updatedAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {minutes} min ago'**
+  String updatedAgo(int minutes);
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String durationMinutes(int minutes);
 }
 
 class _AppLocalizationsDelegate

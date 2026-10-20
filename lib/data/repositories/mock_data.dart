@@ -27,6 +27,7 @@ class MockData {
       batteryLevel: 82,
       placeLabel: 'Home',
       lastUpdated: DateTime.now().subtract(const Duration(minutes: 2)),
+      sinceAt: DateTime.now().subtract(const Duration(days: 2, hours: 14)),
     ),
     CircleMember(
       uid: 'u2',
@@ -37,6 +38,10 @@ class MockData {
       batteryLevel: 45,
       placeLabel: 'Office',
       lastUpdated: DateTime.now().subtract(const Duration(minutes: 5)),
+      isMoving: true,
+      speedKmh: 42,
+      headingDeg: 65,
+      sinceAt: DateTime.now().subtract(const Duration(hours: 3)),
     ),
     CircleMember(
       uid: 'u3',
@@ -47,6 +52,7 @@ class MockData {
       batteryLevel: 15,
       placeLabel: 'School',
       lastUpdated: DateTime.now().subtract(const Duration(minutes: 12)),
+      sinceAt: DateTime.now().subtract(const Duration(hours: 4)),
     ),
     CircleMember(
       uid: 'u4',
@@ -57,6 +63,7 @@ class MockData {
       batteryLevel: 91,
       placeLabel: 'Home',
       lastUpdated: DateTime.now().subtract(const Duration(minutes: 1)),
+      sinceAt: DateTime.now().subtract(const Duration(hours: 5)),
     ),
     CircleMember(
       uid: 'u5',
