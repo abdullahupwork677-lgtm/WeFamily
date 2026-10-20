@@ -11,6 +11,7 @@ import 'package:wefamily/l10n/generated/app_localizations.dart';
 
 import '../../core/constants/config.dart';
 import '../../core/services/location_service.dart';
+import '../../core/services/tile_cache.dart';
 import '../../core/theme/colors.dart';
 import '../../core/widgets/ahl_card.dart';
 import '../../core/widgets/avatar_circle.dart';
@@ -36,8 +37,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String? _selectedUid;
   bool _showTrail = false;
   bool _centeredOnMe = false;
+  bool _showSkeleton = true;
 
   static const double _sheetSize = 0.42;
+
+  void _onMapReady() {
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) setState(() => _showSkeleton = false);
+    });
+  }
 
   @override
   void dispose() {
@@ -119,16 +127,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final CircleMember? selected = _memberById(members, _selectedUid);
     final double sheetPx = MediaQuery.of(context).size.height * _sheetSize;
 
+    final LatLng? cachedCenter = ref.read(lastKnownCenterProvider);
+    final LatLng initialCenter = cachedCenter ??
+        (located.isNotEmpty
+            ? LatLng(located.first.lat!, located.first.lng!)
+            : const LatLng(24.7136, 46.6753));
+    final List<LatLng>? trail =
+        (_showTrail && selected?.lat != null && selected?.lng != null)
+            ? _trailFor(selected!)
+            : null;
+
     return Stack(
       children: [
         Positioned.fill(
           child: FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: located.isNotEmpty
-                  ? LatLng(located.first.lat!, located.first.lng!)
-                  : const LatLng(24.7136, 46.6753),
+              initialCenter: initialCenter,
               initialZoom: 12.5,
+              onMapReady: _onMapReady,
               backgroundColor: const Color(0xFF0D0A14),
             ),
             children: [
@@ -136,6 +153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 key: ValueKey('tiles_$_styleIndex'),
                 urlTemplate: _tileUrl,
                 userAgentPackageName: 'com.wefamily.wefamily',
+                tileProvider: CachedTileProvider(),
               ),
               if (livePos != null)
                 CircleLayer(
@@ -150,16 +168,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              if (_showTrail && selected != null && selected.lat != null && selected.lng != null)
+              if (trail != null)
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: _trailFor(selected),
+                      points: trail,
                       strokeWidth: 12,
                       color: AhlColors.primary.withValues(alpha: 0.25),
                     ),
                     Polyline(
-                      points: _trailFor(selected),
+                      points: trail,
                       strokeWidth: 4.5,
                       color: const Color(0xFF8B5CF6),
                     ),
@@ -172,10 +190,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       point: LatLng(m.lat!, m.lng!),
                       width: (m.uid == _selectedUid) ? 150 : 92,
                       height: (m.uid == _selectedUid) ? 104 : 92,
-                      child: _MemberMarker(
-                        member: m,
-                        selected: m.uid == _selectedUid,
-                        onTap: () => _selectMember(m),
+                      child: RepaintBoundary(
+                        child: _MemberMarker(
+                          member: m,
+                          selected: m.uid == _selectedUid,
+                          onTap: () => _selectMember(m),
+                        ),
                       ),
                     ),
                 ],
@@ -183,6 +203,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
+        if (_showSkeleton)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                color: const Color(0xFF0D0A14),
+                alignment: Alignment.center,
+                child: Container(
+                  width: 120,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                )
+                    .animate(onPlay: (c) => c.repeat())
+                    .shimmer(duration: 1100.ms, color: Colors.white24),
+              ),
+            ),
+          ),
         Positioned(
           top: 0,
           left: 0,
@@ -623,17 +662,18 @@ class _MemberMarker extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
-                  ),
-                )
-                    .animate(onPlay: (c) => c.repeat())
-                    .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.9, 1.9), duration: 1900.ms, curve: Curves.easeOut)
-                    .fadeOut(duration: 1900.ms),
+                if (member.uid == MockData.currentUser.id)
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
+                    ),
+                  )
+                      .animate(onPlay: (c) => c.repeat())
+                      .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.9, 1.9), duration: 1900.ms, curve: Curves.easeOut)
+                      .fadeOut(duration: 1900.ms),
                 Container(
                   padding: EdgeInsets.all(selected ? 2.5 : 2),
                   decoration: BoxDecoration(
