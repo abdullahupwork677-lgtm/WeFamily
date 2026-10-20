@@ -193,3 +193,16 @@ circles/{circleId}/messages/{id} -> {senderId, text, type, lat, lng, createdAt}
   `firestore.rules` (publish it in the console) and the Android/iOS permission entries.
   Build note: re-adding `cloud_firestore` overflowed D8 at 3072m; `-Xmx4096m` with
   `org.gradle.parallel=false` fixed `mergeExtDexRelease` (APK 27.7 MB).
+- 2026-10-20: **Task 5 shipped (create / join / manage)**. Circle screen now has a real 6-box
+  invite-code input (auto uppercase, paste supported) with localised errors (invalid / already
+  member / full / offline), and join runs in a Firestore transaction (code lookup -> duplicate +
+  member-cap checks -> add uid + member doc). New `circle_management_screen.dart`: invite code with
+  copy, native share and WhatsApp, owner code regeneration, owner member removal, delete circle
+  (owner) or leave circle (member) with confirmations; leaving/deleting stops tracking, clears the
+  session and routes back to `/circle`. Manage entry points added to the home circle switcher and
+  Settings. Home listens for membership loss (removed while app open) and redirects to the circle
+  screen. `url_launcher` added. `firestore.rules` v2 adds join/leave/regenerate/remove/delete
+  rules (signed-in `get` on circles for code lookup; list stays member-only; invite-code create
+  owner-only, delete owner-only). Publish the new rules before two-phone testing.
+  Known limitation: Task 5's link-member-to-tree item is deferred because the tree screen still
+  uses mock data (no tree datastore yet), so the "green realtime dot" cannot be real.

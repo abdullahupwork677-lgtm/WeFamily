@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
@@ -13,8 +14,10 @@ import '../../core/services/tile_cache.dart';
 import '../../core/services/tracking_service.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/circle_providers.dart';
+import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_button.dart';
 import '../../data/models/models.dart';
+import '../circle/circle_management_screen.dart';
 import '../location/location_permission_sheet.dart';
 import '../member/member_detail_sheet.dart';
 import '../notifications/notifications_screen.dart';
@@ -150,13 +153,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _shareInvite(FamilyCircle? circle) async {
+    final l10n = AppLocalizations.of(context);
     final code = circle?.inviteCode;
     if (code == null || code.isEmpty) {
-      _snack(AppLocalizations.of(context).comingSoon);
+      _snack(l10n.comingSoon);
       return;
     }
     await SharePlus.instance.share(
-      ShareParams(text: '${AppConfig.defaultInviteBase}$code'),
+      ShareParams(
+        text: l10n.shareInviteMessage(
+          code,
+          '${AppConfig.defaultInviteBase}$code',
+        ),
+      ),
     );
   }
 
@@ -249,6 +258,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 20),
               AhlButton(
+                label: l10n.manageCircle,
+                icon: Icons.settings_rounded,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const CircleManagementScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              AhlButton(
                 label: l10n.shareInvite,
                 icon: Icons.share_rounded,
                 gradient: false,
@@ -312,14 +334,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final uid = ref.watch(currentUidProvider);
 
     ref.listen<AsyncValue<FamilyCircle?>>(myCircleProvider, (previous, next) {
+      if (AppConfig.useMockData) return;
       final active = next.value;
-      if (active != null && !AppConfig.useMockData) {
+      if (active != null) {
         final localizations = AppLocalizations.of(context);
         ref.read(trackingControllerProvider.notifier).start(
               circleId: active.id,
               foregroundTitle: localizations.sharingNotificationTitle,
               foregroundText: localizations.sharingNotificationBody,
             );
+        return;
+      }
+      final session = ref.read(sessionProvider);
+      if (previous?.value != null && session.isLoggedIn && session.hasCircle) {
+        ref
+            .read(trackingControllerProvider.notifier)
+            .stop(writePaused: false);
+        ref.read(sessionProvider.notifier).clearCircle();
+        if (mounted) context.go('/circle');
       }
     });
 

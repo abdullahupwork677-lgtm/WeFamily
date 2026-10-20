@@ -242,6 +242,23 @@ class SessionNotifier extends Notifier<SessionState> {
     _persistString(kCircleIdKey, circle.id);
   }
 
+  Future<void> adoptCircle(FamilyCircle circle) async {
+    state = state.copyWith(hasCircle: true, circle: circle);
+    _persistBool(kHasCircleKey, true);
+    _persistString(kCircleIdKey, circle.id);
+  }
+
+  Future<void> clearCircle() async {
+    state = SessionState(
+      onboardingSeen: state.onboardingSeen,
+      isLoggedIn: state.isLoggedIn,
+      hasCircle: false,
+      user: state.user,
+    );
+    _persistBool(kHasCircleKey, false);
+    _persistString(kCircleIdKey, '');
+  }
+
   Future<void> logout() async {
     state = const SessionState(onboardingSeen: true);
     _persistBool(kLoggedInKey, false);

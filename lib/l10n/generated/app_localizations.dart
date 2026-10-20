@@ -1039,6 +1039,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a circle name'**
   String get enterCircleName;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid invite code. Check the code and try again.'**
+  String get invalidCode;
+
+  /// No description provided for @alreadyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already a member of this circle.'**
+  String get alreadyMember;
+
+  /// No description provided for @circleFull.
+  ///
+  /// In en, this message translates to:
+  /// **'This circle is full (10 members max).'**
+  String get circleFull;
+
+  /// No description provided for @noInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Try again.'**
+  String get noInternet;
+
+  /// No description provided for @joinFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not join the circle. Try again.'**
+  String get joinFailed;
+
+  /// No description provided for @manageCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage circle'**
+  String get manageCircle;
+
+  /// No description provided for @inviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code'**
+  String get inviteCode;
+
+  /// No description provided for @copyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code'**
+  String get copyCode;
+
+  /// No description provided for @codeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get codeCopied;
+
+  /// No description provided for @regenerateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate code'**
+  String get regenerateCode;
+
+  /// No description provided for @regenerateConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'The old code stops working immediately. Continue?'**
+  String get regenerateConfirm;
+
+  /// No description provided for @regenerateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'New invite code generated'**
+  String get regenerateSuccess;
+
+  /// No description provided for @removeMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeMember;
+
+  /// No description provided for @removeMemberConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the circle?'**
+  String removeMemberConfirm(String name);
+
+  /// No description provided for @leaveCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave circle'**
+  String get leaveCircle;
+
+  /// No description provided for @leaveCircleConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll stop sharing your location with this circle.'**
+  String get leaveCircleConfirm;
+
+  /// No description provided for @deleteCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete circle'**
+  String get deleteCircle;
+
+  /// No description provided for @deleteCircleConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes the circle for everyone. This cannot be undone.'**
+  String get deleteCircleConfirm;
+
+  /// No description provided for @circleDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Circle deleted'**
+  String get circleDeleted;
+
+  /// No description provided for @leftCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the circle'**
+  String get leftCircle;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @whatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsapp;
+
+  /// No description provided for @circleMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get circleMembers;
+
+  /// No description provided for @owner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get owner;
+
+  /// No description provided for @shareInviteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join my family on WeFamily! Code: {code} | {link}'**
+  String shareInviteMessage(String code, String link);
 }
 
 class _AppLocalizationsDelegate

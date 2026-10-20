@@ -11,6 +11,7 @@ import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_card.dart';
 import '../../core/widgets/avatar_circle.dart';
 import '../../core/widgets/language_switcher.dart';
+import '../circle/circle_management_screen.dart';
 import '../location/location_permission_sheet.dart';
 import '../notifications/notifications_screen.dart';
 
@@ -81,6 +82,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       );
                     },
                   ),
+                  if (session.hasCircle) ...[
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    ListTile(
+                      leading: const Icon(Icons.family_restroom_rounded,
+                          color: AhlColors.primary),
+                      title: Text(l10n.manageCircle),
+                      subtitle: session.circle == null
+                          ? null
+                          : Text(
+                              session.circle!.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: AhlColors.inkMedium),
+                            ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => const CircleManagementScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   SwitchListTile(
                     secondary: const Icon(Icons.location_on_outlined, color: AhlColors.primary),

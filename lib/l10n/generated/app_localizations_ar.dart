@@ -502,4 +502,86 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get enterCircleName => 'أدخل اسم الدائرة';
+
+  @override
+  String get invalidCode =>
+      'رمز الدعوة غير صالح. تحقق من الرمز وحاول مرة أخرى.';
+
+  @override
+  String get alreadyMember => 'أنت بالفعل عضو في هذه الدائرة.';
+
+  @override
+  String get circleFull => 'هذه الدائرة ممتلئة (10 أعضاء كحد أقصى).';
+
+  @override
+  String get noInternet => 'لا يوجد اتصال بالإنترنت. حاول مرة أخرى.';
+
+  @override
+  String get joinFailed => 'تعذر الانضمام إلى الدائرة. حاول مرة أخرى.';
+
+  @override
+  String get manageCircle => 'إدارة الدائرة';
+
+  @override
+  String get inviteCode => 'رمز الدعوة';
+
+  @override
+  String get copyCode => 'نسخ الرمز';
+
+  @override
+  String get codeCopied => 'تم نسخ الرمز';
+
+  @override
+  String get regenerateCode => 'تجديد الرمز';
+
+  @override
+  String get regenerateConfirm =>
+      'سيتوقف الرمز القديم عن العمل فورًا. هل تريد المتابعة؟';
+
+  @override
+  String get regenerateSuccess => 'تم إنشاء رمز دعوة جديد';
+
+  @override
+  String get removeMember => 'إزالة';
+
+  @override
+  String removeMemberConfirm(String name) {
+    return 'إزالة $name من الدائرة؟';
+  }
+
+  @override
+  String get leaveCircle => 'مغادرة الدائرة';
+
+  @override
+  String get leaveCircleConfirm => 'ستتوقف عن مشاركة موقعك مع هذه الدائرة.';
+
+  @override
+  String get deleteCircle => 'حذف الدائرة';
+
+  @override
+  String get deleteCircleConfirm =>
+      'سيتم حذف الدائرة للجميع. لا يمكن التراجع عن هذا.';
+
+  @override
+  String get circleDeleted => 'تم حذف الدائرة';
+
+  @override
+  String get leftCircle => 'لقد غادرت الدائرة';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get whatsapp => 'واتساب';
+
+  @override
+  String get circleMembers => 'الأعضاء';
+
+  @override
+  String get owner => 'المالك';
+
+  @override
+  String shareInviteMessage(String code, String link) {
+    return 'انضم إلى عائلتي على WeFamily! الرمز: $code | $link';
+  }
 }

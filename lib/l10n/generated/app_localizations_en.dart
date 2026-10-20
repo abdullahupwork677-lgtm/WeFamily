@@ -505,4 +505,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterCircleName => 'Enter a circle name';
+
+  @override
+  String get invalidCode =>
+      'Invalid invite code. Check the code and try again.';
+
+  @override
+  String get alreadyMember => 'You\'re already a member of this circle.';
+
+  @override
+  String get circleFull => 'This circle is full (10 members max).';
+
+  @override
+  String get noInternet => 'No internet connection. Try again.';
+
+  @override
+  String get joinFailed => 'Could not join the circle. Try again.';
+
+  @override
+  String get manageCircle => 'Manage circle';
+
+  @override
+  String get inviteCode => 'Invite code';
+
+  @override
+  String get copyCode => 'Copy code';
+
+  @override
+  String get codeCopied => 'Code copied';
+
+  @override
+  String get regenerateCode => 'Regenerate code';
+
+  @override
+  String get regenerateConfirm =>
+      'The old code stops working immediately. Continue?';
+
+  @override
+  String get regenerateSuccess => 'New invite code generated';
+
+  @override
+  String get removeMember => 'Remove';
+
+  @override
+  String removeMemberConfirm(String name) {
+    return 'Remove $name from the circle?';
+  }
+
+  @override
+  String get leaveCircle => 'Leave circle';
+
+  @override
+  String get leaveCircleConfirm =>
+      'You\'ll stop sharing your location with this circle.';
+
+  @override
+  String get deleteCircle => 'Delete circle';
+
+  @override
+  String get deleteCircleConfirm =>
+      'This deletes the circle for everyone. This cannot be undone.';
+
+  @override
+  String get circleDeleted => 'Circle deleted';
+
+  @override
+  String get leftCircle => 'You left the circle';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get whatsapp => 'WhatsApp';
+
+  @override
+  String get circleMembers => 'Members';
+
+  @override
+  String get owner => 'Owner';
+
+  @override
+  String shareInviteMessage(String code, String link) {
+    return 'Join my family on WeFamily! Code: $code | $link';
+  }
 }

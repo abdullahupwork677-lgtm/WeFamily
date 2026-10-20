@@ -5,6 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/models.dart';
 
+enum CircleJoinFailure { invalidCode, alreadyMember, full, offline, unknown }
+
+class CircleJoinException implements Exception {
+  const CircleJoinException(this.failure);
+
+  final CircleJoinFailure failure;
+}
+
 /// Firestore access for circles, members and user profiles.
 ///
 /// Task 4 keeps the surface small (create + sync + location writes); Task 5
@@ -145,6 +153,144 @@ class CircleRepository {
       if (created) return circle;
     }
     throw StateError('Could not allocate a unique invite code');
+  }
+
+  /// Joins a circle with a 6-character invite code. Runs in a transaction so
+  /// the member limit and duplicate joins stay race-free.
+  Future<FamilyCircle> joinCircle({
+    required String code,
+    required String uid,
+    required String name,
+  }) async {
+    final normalized = code.trim().toUpperCase();
+    if (normalized.length != 6) {
+      throw const CircleJoinException(CircleJoinFailure.invalidCode);
+    }
+    try {
+      return await _db.runTransaction<FamilyCircle>((tx) async {
+        final codeSnap =
+            await tx.get(_db.collection('inviteCodes').doc(normalized));
+        final circleId = (codeSnap.data()?['circleId'] as String?) ?? '';
+        if (!codeSnap.exists || circleId.isEmpty) {
+          throw const CircleJoinException(CircleJoinFailure.invalidCode);
+        }
+        final circleRef = _circleDoc(circleId);
+        final circleSnap = await tx.get(circleRef);
+        if (!circleSnap.exists) {
+          throw const CircleJoinException(CircleJoinFailure.invalidCode);
+        }
+        final data = circleSnap.data() ?? const <String, dynamic>{};
+        final members = ((data['memberUids'] as List<dynamic>?) ?? const [])
+            .map((e) => e.toString())
+            .toList();
+        if (members.contains(uid)) {
+          throw const CircleJoinException(CircleJoinFailure.alreadyMember);
+        }
+        if (members.length >= 10) {
+          throw const CircleJoinException(CircleJoinFailure.full);
+        }
+        final updated = [...members, uid];
+        tx.update(circleRef, {'memberUids': updated});
+        tx.set(_members(circleId).doc(uid), {
+          'name': name,
+          'relation': 'other',
+          'role': 'member',
+          'sharingLocation': true,
+          'ghostMode': false,
+          'joinedAt': FieldValue.serverTimestamp(),
+        });
+        return FamilyCircle(
+          id: circleId,
+          name: (data['name'] as String?) ?? 'Family',
+          ownerUid: (data['ownerUid'] as String?) ?? '',
+          inviteCode: (data['inviteCode'] as String?) ?? normalized,
+          memberUids: updated,
+        );
+      });
+    } on CircleJoinException {
+      rethrow;
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable' ||
+          e.code == 'deadline-exceeded' ||
+          e.code == 'network-request-failed') {
+        throw const CircleJoinException(CircleJoinFailure.offline);
+      }
+      throw const CircleJoinException(CircleJoinFailure.unknown);
+    } catch (_) {
+      throw const CircleJoinException(CircleJoinFailure.unknown);
+    }
+  }
+
+  /// Rotates the invite code. The old code stops working immediately.
+  Future<String> regenerateInviteCode({required String circleId}) async {
+    for (var attempt = 0; attempt < 6; attempt++) {
+      final code = _randomCode();
+      final codeRef = _db.collection('inviteCodes').doc(code);
+      try {
+        return await _db.runTransaction<String>((tx) async {
+          final circleSnap = await tx.get(_circleDoc(circleId));
+          if (!circleSnap.exists) throw StateError('Circle not found');
+          final data = circleSnap.data() ?? const <String, dynamic>{};
+          final oldCode = data['inviteCode'] as String?;
+          final existing = await tx.get(codeRef);
+          if (existing.exists && code != oldCode) {
+            throw StateError('code-taken');
+          }
+          if (oldCode != null && oldCode.isNotEmpty && oldCode != code) {
+            tx.delete(_db.collection('inviteCodes').doc(oldCode));
+          }
+          tx.set(codeRef, {
+            'circleId': circleId,
+            'ownerUid': data['ownerUid'],
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          tx.update(_circleDoc(circleId), {'inviteCode': code});
+          return code;
+        });
+      } on FirebaseException {
+        rethrow;
+      } catch (e) {
+        if (e is StateError && e.message == 'code-taken') continue;
+        rethrow;
+      }
+    }
+    throw StateError('Could not allocate a unique invite code');
+  }
+
+  /// Removes a member (owner removing someone, or a member leaving).
+  Future<void> removeMember({
+    required String circleId,
+    required String uid,
+  }) async {
+    await _db.runTransaction<void>((tx) async {
+      final circleRef = _circleDoc(circleId);
+      final circleSnap = await tx.get(circleRef);
+      if (!circleSnap.exists) return;
+      final data = circleSnap.data() ?? const <String, dynamic>{};
+      final members = ((data['memberUids'] as List<dynamic>?) ?? const [])
+          .map((e) => e.toString())
+          .where((memberUid) => memberUid != uid)
+          .toList();
+      tx.update(circleRef, {'memberUids': members});
+      tx.delete(_members(circleId).doc(uid));
+    });
+  }
+
+  /// Deletes the whole circle (owner only): members, invite code and lookup.
+  Future<void> deleteCircle({required String circleId}) async {
+    final circleSnap = await _circleDoc(circleId).get();
+    if (!circleSnap.exists) return;
+    final oldCode = circleSnap.data()?['inviteCode'] as String?;
+    final members = await _members(circleId).get();
+    final batch = _db.batch();
+    for (final doc in members.docs) {
+      batch.delete(doc.reference);
+    }
+    if (oldCode != null && oldCode.isNotEmpty) {
+      batch.delete(_db.collection('inviteCodes').doc(oldCode));
+    }
+    batch.delete(_circleDoc(circleId));
+    await batch.commit();
   }
 
   Future<void> updateMyLocation({
