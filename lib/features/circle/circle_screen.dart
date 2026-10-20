@@ -30,14 +30,16 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
 
   Future<void> _create(AppLocalizations l10n) async {
     final name = _nameController.text.trim();
-    if (name.isEmpty) return;
-    await ref.read(sessionProvider.notifier).createOrJoinCircle(name);
+    if (name.isEmpty && !AppConfig.useMockData) return;
+    await ref
+        .read(sessionProvider.notifier)
+        .createOrJoinCircle(name.isEmpty ? 'My Family' : name);
     if (mounted) context.go('/home');
   }
 
   Future<void> _join(AppLocalizations l10n) async {
     final code = _codeController.text.trim();
-    if (code.isEmpty) return;
+    if (code.isEmpty && !AppConfig.useMockData) return;
     await ref.read(sessionProvider.notifier).createOrJoinCircle('My Family');
     if (mounted) context.go('/home');
   }

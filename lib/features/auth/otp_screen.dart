@@ -5,6 +5,7 @@ import 'package:wefamily/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constants/config.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_button.dart';
@@ -59,7 +60,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final code = _controllers.map((c) => c.text).join();
     if (code.length < 6) return;
     await ref.read(sessionProvider.notifier).login(widget.phone);
-    if (mounted) context.go('/profile-setup');
+    if (mounted) context.push('/profile-setup');
   }
 
   @override
@@ -70,7 +71,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/login');
+            }
+          },
         ),
       ),
       body: SafeArea(
@@ -130,6 +137,25 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   ),
                 ),
               ),
+              if (AppConfig.useMockData) ...[
+                const SizedBox(height: 8),
+                Center(
+                  child: TextButton(
+                    onPressed: () async {
+                      await ref.read(sessionProvider.notifier).login(widget.phone);
+                      if (!context.mounted) return;
+                      context.push('/profile-setup');
+                    },
+                    child: Text(
+                      l10n.skipDemo,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AhlColors.inkMedium,
+                            decoration: TextDecoration.underline,
+                          ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

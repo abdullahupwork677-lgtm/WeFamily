@@ -115,5 +115,14 @@
   "error": "Something went wrong",
   "retry": "Retry",
   "empty": "Nothing here yet",
-  "onboardingSkipConfirm": "You can set this up later in Settings"
+  "onboardingSkipConfirm": "You can set this up later in Settings",
+  "skipDemo": "Skip for now (demo)",
+  "locationOff": "Location off — tap to retry",  "emailHint": "Email",
+  "passwordHint": "Password",
+  "signIn": "Sign in",
+  "createAccount": "Create account",
+  "authInvalid": "Enter a valid email and a password of at least 6 characters",
+  "authFailed": "Could not sign in. Check your connection.",
+  "switchToSignup": "New here? Create account",
+  "switchToLogin": "Already have an account? Sign in"
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,27 +43,34 @@ class SessionState {
 }
 
 class SessionNotifier extends Notifier<SessionState> {
+  Future<void>? _loadFuture;
+
   @override
   SessionState build() {
-    _load();
+    _loadFuture ??= _load();
     return const SessionState();
   }
 
+  Future<void> get loaded => _loadFuture ??= _load();
+
   Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    state = SessionState(
-      onboardingSeen: prefs.getBool(kOnboardingSeenKey) ?? false,
-      isLoggedIn: prefs.getBool(kLoggedInKey) ?? false,
-      hasCircle: prefs.getBool(kHasCircleKey) ?? false,
-      user: prefs.getBool(kLoggedInKey) == true ? MockData.currentUser : null,
-      circle: prefs.getBool(kHasCircleKey) == true ? MockData.circle : null,
-    );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      state = SessionState(
+        onboardingSeen: prefs.getBool(kOnboardingSeenKey) ?? false,
+        isLoggedIn: prefs.getBool(kLoggedInKey) ?? false,
+        hasCircle: prefs.getBool(kHasCircleKey) ?? false,
+        user: prefs.getBool(kLoggedInKey) == true ? MockData.currentUser : null,
+        circle: prefs.getBool(kHasCircleKey) == true ? MockData.circle : null,
+      );
+    } catch (_) {
+      // keep default state if storage is unavailable
+    }
   }
 
   Future<void> completeOnboarding() async {
     state = state.copyWith(onboardingSeen: true);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(kOnboardingSeenKey, true);
+    _persistBool(kOnboardingSeenKey, true);
   }
 
   Future<void> login(String phone) async {
@@ -69,8 +78,7 @@ class SessionNotifier extends Notifier<SessionState> {
       isLoggedIn: true,
       user: MockData.currentUser.copyWith(phone: phone),
     );
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(kLoggedInKey, true);
+    _persistBool(kLoggedInKey, true);
   }
 
   Future<void> updateProfile({String? name, String? gender, DateTime? birthDate}) async {
@@ -92,15 +100,26 @@ class SessionNotifier extends Notifier<SessionState> {
         memberUids: MockData.circle.memberUids,
       ),
     );
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(kHasCircleKey, true);
+    _persistBool(kHasCircleKey, true);
   }
 
   Future<void> logout() async {
     state = const SessionState(onboardingSeen: true);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(kLoggedInKey, false);
-    await prefs.setBool(kHasCircleKey, false);
+    _persistBool(kLoggedInKey, false);
+    _persistBool(kHasCircleKey, false);
+  }
+
+  // Storage must never block navigation: persist in background, ignore errors.
+  void _persistBool(String key, bool value) {
+    unawaited(() async {
+      try {
+        final prefs = await SharedPreferences.getInstance()
+            .timeout(const Duration(seconds: 5));
+        await prefs.setBool(key, value);
+      } catch (_) {
+        // ignore storage failures
+      }
+    }());
   }
 }
 

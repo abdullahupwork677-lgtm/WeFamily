@@ -321,4 +321,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboardingSkipConfirm => 'يمكنك إعداد هذا لاحقًا في الإعدادات';
+
+  @override
+  String get skipDemo => 'تخطَّ الآن (تجريبي)';
+
+  @override
+  String get locationOff => 'الموقع مغلق — أعد المحاولة';
+
+  @override
+  String get emailHint => 'البريد الإلكتروني';
+
+  @override
+  String get passwordHint => 'كلمة المرور';
+
+  @override
+  String get signIn => 'تسجيل الدخول';
+
+  @override
+  String get createAccount => 'إنشاء حساب';
+
+  @override
+  String get authInvalid => 'أدخل بريدًا صالحًا وكلمة مرور من 6 أحرف على الأقل';
+
+  @override
+  String get authFailed => 'تعذر تسجيل الدخول. تحقق من اتصالك.';
+
+  @override
+  String get switchToSignup => 'جديد هنا؟ أنشئ حسابًا';
+
+  @override
+  String get switchToLogin => 'لديك حساب؟ سجّل الدخول';
 }

@@ -7,13 +7,19 @@ import '../core/theme/theme.dart';
 import '../core/utils/locale_provider.dart';
 import 'router.dart';
 
-class WeFamilyApp extends ConsumerWidget {
+class WeFamilyApp extends ConsumerStatefulWidget {
   const WeFamilyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WeFamilyApp> createState() => _WeFamilyAppState();
+}
+
+class _WeFamilyAppState extends ConsumerState<WeFamilyApp> {
+  final AppRouter _appRouter = AppRouter();
+
+  @override
+  Widget build(BuildContext context) {
     final Locale locale = ref.watch(localeProvider);
-    final AppRouter appRouter = AppRouter();
 
     return MaterialApp.router(
       title: 'WeFamily',
@@ -27,7 +33,7 @@ class WeFamilyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      routerConfig: appRouter.router,
+      routerConfig: _appRouter.router,
     );
   }
 }

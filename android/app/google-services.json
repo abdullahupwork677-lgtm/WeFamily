@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1036477545180",
+    "project_id": "wefamily-98516",
+    "storage_bucket": "wefamily-98516.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036477545180:android:10af5289c0e70dc23f1219",
+        "android_client_info": {
+          "package_name": "com.wefamily.wefamily"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDjqbiLzkSgf1WuNEnWDu_zbbQ1dIRrzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

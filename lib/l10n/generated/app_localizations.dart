@@ -709,6 +709,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can set this up later in Settings'**
   String get onboardingSkipConfirm;
+
+  /// No description provided for @skipDemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now (demo)'**
+  String get skipDemo;
+
+  /// No description provided for @locationOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Location off — tap to retry'**
+  String get locationOff;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailHint;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordHint;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAccount;
+
+  /// No description provided for @authInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email and a password of at least 6 characters'**
+  String get authInvalid;
+
+  /// No description provided for @authFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign in. Check your connection.'**
+  String get authFailed;
+
+  /// No description provided for @switchToSignup.
+  ///
+  /// In en, this message translates to:
+  /// **'New here? Create account'**
+  String get switchToSignup;
+
+  /// No description provided for @switchToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get switchToLogin;
 }
 
 class _AppLocalizationsDelegate

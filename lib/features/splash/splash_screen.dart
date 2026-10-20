@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
 
+import '../../core/services/auth_service.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/session_provider.dart';
 
@@ -18,12 +20,36 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1500), _navigate);
+    _boot();
   }
 
-  void _navigate() {
+  Future<void> _boot() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      await ref
+          .read(sessionProvider.notifier)
+          .loaded
+          .timeout(const Duration(seconds: 3));
+    } catch (_) {
+      // navigate with whatever state we have instead of getting stuck
+    }
+    final User? authUser = await firstAuthUser();
+    _navigate(authUser);
+  }
+
+  void _navigate(User? authUser) {
     if (!mounted) return;
     final session = ref.read(sessionProvider);
+    if (authUser != null) {
+      if (session.hasCircle) {
+        context.go('/home');
+      } else if (session.isLoggedIn) {
+        context.go('/circle');
+      } else {
+        context.go('/profile-setup');
+      }
+      return;
+    }
     if (session.isLoggedIn && session.hasCircle) {
       context.go('/home');
     } else if (session.isLoggedIn) {

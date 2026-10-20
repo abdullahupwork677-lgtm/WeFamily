@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,6 +108,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 leading: const Icon(Icons.logout, color: AhlColors.danger),
                 title: Text(l10n.logout, style: const TextStyle(color: AhlColors.danger)),
                 onTap: () async {
+                  try {
+                    await FirebaseAuth.instance.signOut();
+                  } catch (_) {
+                    // ignore when Firebase is unavailable
+                  }
                   await ref.read(sessionProvider.notifier).logout();
                   if (context.mounted) context.go('/login');
                 },

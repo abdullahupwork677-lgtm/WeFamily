@@ -3,6 +3,7 @@ import 'package:wefamily/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constants/config.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_button.dart';
@@ -27,13 +28,14 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   }
 
   Future<void> _save(AppLocalizations l10n) async {
-    if (_nameController.text.trim().isEmpty) return;
+    final name = _nameController.text.trim();
+    if (name.isEmpty && !AppConfig.useMockData) return;
     await ref.read(sessionProvider.notifier).updateProfile(
-          name: _nameController.text.trim(),
+          name: name.isEmpty ? 'Demo User' : name,
           gender: _gender,
           birthDate: _birthDate,
         );
-    if (mounted) context.go('/circle');
+    if (mounted) context.push('/circle');
   }
 
   @override
@@ -111,6 +113,28 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               ),
               const Spacer(),
               AhlButton(label: l10n.saveContinue, onPressed: () => _save(l10n)),
+              if (AppConfig.useMockData)
+                Center(
+                  child: TextButton(
+                    onPressed: () async {
+                      final name = _nameController.text.trim();
+                      await ref.read(sessionProvider.notifier).updateProfile(
+                            name: name.isEmpty ? 'Demo User' : name,
+                            gender: _gender,
+                            birthDate: _birthDate,
+                          );
+                      if (!context.mounted) return;
+                      context.push('/circle');
+                    },
+                    child: Text(
+                      l10n.skipDemo,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AhlColors.inkMedium,
+                            decoration: TextDecoration.underline,
+                          ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

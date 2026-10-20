@@ -322,4 +322,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingSkipConfirm => 'You can set this up later in Settings';
+
+  @override
+  String get skipDemo => 'Skip for now (demo)';
+
+  @override
+  String get locationOff => 'Location off — tap to retry';
+
+  @override
+  String get emailHint => 'Email';
+
+  @override
+  String get passwordHint => 'Password';
+
+  @override
+  String get signIn => 'Sign in';
+
+  @override
+  String get createAccount => 'Create account';
+
+  @override
+  String get authInvalid =>
+      'Enter a valid email and a password of at least 6 characters';
+
+  @override
+  String get authFailed => 'Could not sign in. Check your connection.';
+
+  @override
+  String get switchToSignup => 'New here? Create account';
+
+  @override
+  String get switchToLogin => 'Already have an account? Sign in';
 }
