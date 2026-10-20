@@ -177,7 +177,7 @@ class _GenderChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AhlColors.ink : AhlColors.surface,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: selected ? AhlColors.ink : AhlColors.border, width: 1.5),
+          boxShadow: selected ? null : AhlColors.softShadowSmall,
         ),
         child: Text(
           label,

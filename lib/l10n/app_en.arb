@@ -124,5 +124,6 @@
   "authInvalid": "Enter a valid email and a password of at least 6 characters",
   "authFailed": "Could not sign in. Check your connection.",
   "switchToSignup": "New here? Create account",
-  "switchToLogin": "Already have an account? Sign in"
+  "switchToLogin": "Already have an account? Sign in",  "reset": "Reset",
+  "sosDemoNote": "Demo mode — no real alerts sent"
 }

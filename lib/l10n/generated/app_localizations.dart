@@ -769,6 +769,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Already have an account? Sign in'**
   String get switchToLogin;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @sosDemoNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode — no real alerts sent'**
+  String get sosDemoNote;
 }
 
 class _AppLocalizationsDelegate

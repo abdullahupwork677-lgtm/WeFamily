@@ -33,19 +33,15 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       body: IndexedStack(index: _index, children: screens),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
-          boxShadow: [
-            BoxShadow(
-              color: AhlColors.ink.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, -4),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          boxShadow: AhlColors.sheetShadow,
         ),
         child: SafeArea(
+          top: false,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
             child: Row(
               children: [
                 _NavItem(
@@ -119,26 +115,17 @@ class _NavItem extends StatelessWidget {
             Icon(
               selected ? activeIcon : icon,
               size: 26,
-              color: selected ? AhlColors.primary : AhlColors.inkLight,
+              color: selected ? AhlColors.primary : AhlColors.outline,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: selected ? AhlColors.primary : AhlColors.inkLight,
+                    color: selected ? AhlColors.primary : AhlColors.outline,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   ),
             ),
             const SizedBox(height: 2),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: selected ? 16 : 0,
-              height: 3,
-              decoration: BoxDecoration(
-                color: AhlColors.primary,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
           ],
         ),
       ),

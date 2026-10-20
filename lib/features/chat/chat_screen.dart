@@ -211,7 +211,7 @@ class _MessageBubble extends StatelessWidget {
             bottomLeft: Radius.circular(isMe ? 16 : 4),
             bottomRight: Radius.circular(isMe ? 4 : 16),
           ),
-          border: isMe ? null : Border.all(color: AhlColors.border),
+          boxShadow: isMe ? null : AhlColors.softShadowSmall,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

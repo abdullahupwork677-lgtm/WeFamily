@@ -12,8 +12,9 @@ void showMemberDetailSheet(BuildContext context, CircleMember member) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    backgroundColor: AhlColors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
     ),
     builder: (context) {
       return SafeArea(
@@ -140,7 +141,7 @@ class _ActionBtn extends StatelessWidget {
         decoration: BoxDecoration(
           color: primary ? AhlColors.primary : AhlColors.surface,
           borderRadius: BorderRadius.circular(999),
-          border: primary ? null : Border.all(color: AhlColors.border, width: 1.5),
+          boxShadow: primary ? null : AhlColors.softShadowSmall,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -30,8 +30,9 @@ void showAddRelativeSheet(BuildContext context) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    backgroundColor: AhlColors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
     ),
     builder: (context) {
       return StatefulBuilder(
@@ -80,9 +81,7 @@ void showAddRelativeSheet(BuildContext context) {
                             decoration: BoxDecoration(
                               color: selected ? AhlColors.ink : AhlColors.surface,
                               borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: selected ? AhlColors.ink : AhlColors.border,
-                              ),
+                              boxShadow: selected ? null : AhlColors.softShadowSmall,
                             ),
                             child: Text(
                               r.$2,

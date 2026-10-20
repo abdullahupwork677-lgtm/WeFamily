@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 
-class AhlButton extends StatelessWidget {
+/// Primary CTA = purple-to-magenta gradient pill.
+/// Secondary (`gradient: false`) = light grey pill with purple text and a
+/// soft shadow. Both get a subtle tap-scale micro-animation.
+class AhlButton extends StatefulWidget {
   const AhlButton({
     super.key,
     required this.label,
@@ -18,41 +21,92 @@ class AhlButton extends StatelessWidget {
   final IconData? icon;
 
   @override
+  State<AhlButton> createState() => _AhlButtonState();
+}
+
+class _AhlButtonState extends State<AhlButton> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final bool enabled = widget.onPressed != null;
+    final Color foreground =
+        widget.gradient ? Colors.white : AhlColors.primary;
+
     final Widget child = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (icon != null) ...[
-          Icon(icon, size: 20, color: Colors.white),
+        if (widget.icon != null) ...[
+          Icon(widget.icon, size: 20, color: foreground),
           const SizedBox(width: 8),
         ],
-        Text(label, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text(
+          widget.label,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(color: foreground),
+        ),
       ],
     );
 
     final ButtonStyle style = FilledButton.styleFrom(
-      backgroundColor: gradient ? Colors.transparent : AhlColors.primary,
-      foregroundColor: Colors.white,
-      disabledBackgroundColor: AhlColors.primary.withValues(alpha: 0.4),
+      backgroundColor: Colors.transparent,
+      foregroundColor: foreground,
+      shadowColor: Colors.transparent,
+      disabledBackgroundColor: Colors.transparent,
+      disabledForegroundColor: foreground.withValues(alpha: 0.5),
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
       shape: const StadiumBorder(),
     );
 
-    final Widget button = gradient
-        ? DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: AhlColors.primaryGradient,
-              borderRadius: BorderRadius.all(Radius.circular(999)),
-            ),
-            child: FilledButton(onPressed: onPressed, style: style, child: child),
-          )
-        : FilledButton(onPressed: onPressed, style: style, child: child);
+    final Widget button = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: widget.gradient
+            ? (enabled
+                ? AhlColors.primaryGradient
+                : LinearGradient(
+                    colors: [
+                      AhlColors.primary.withValues(alpha: 0.4),
+                      AhlColors.primaryGradientEnd.withValues(alpha: 0.4),
+                    ],
+                    begin: AlignmentDirectional.topStart,
+                    end: AlignmentDirectional.bottomEnd,
+                  ))
+            : null,
+        color: widget.gradient ? null : AhlColors.chip,
+        borderRadius: BorderRadius.circular(999),
+        boxShadow: widget.gradient
+            ? [
+                BoxShadow(
+                  color: AhlColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : AhlColors.softShadowSmall,
+      ),
+      child: FilledButton(
+        onPressed: widget.onPressed,
+        style: style,
+        child: child,
+      ),
+    );
 
-    final Widget sized = expand ? SizedBox(width: double.infinity, child: button) : button;
-    return GestureDetector(
-      onTapDown: (_) {},
-      child: sized,
+    final Widget sized =
+        widget.expand ? SizedBox(width: double.infinity, child: button) : button;
+
+    return Listener(
+      onPointerDown: (_) => setState(() => _pressed = true),
+      onPointerUp: (_) => setState(() => _pressed = false),
+      onPointerCancel: (_) => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        child: sized,
+      ),
     );
   }
 }

@@ -351,4 +351,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get switchToLogin => 'لديك حساب؟ سجّل الدخول';
+
+  @override
+  String get reset => 'إعادة تعيين';
+
+  @override
+  String get sosDemoNote => 'وضع تجريبي — لا تُرسل تنبيهات حقيقية';
 }

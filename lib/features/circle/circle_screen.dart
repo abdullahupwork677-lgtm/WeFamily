@@ -145,7 +145,7 @@ class _TabPill extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AhlColors.ink : AhlColors.surface,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: selected ? AhlColors.ink : AhlColors.border),
+          boxShadow: selected ? null : AhlColors.softShadowSmall,
         ),
         child: Text(
           label,

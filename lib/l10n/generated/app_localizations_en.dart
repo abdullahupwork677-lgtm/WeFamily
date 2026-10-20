@@ -353,4 +353,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get switchToLogin => 'Already have an account? Sign in';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get sosDemoNote => 'Demo mode — no real alerts sent';
 }

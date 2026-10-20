@@ -28,9 +28,9 @@ ThemeData ahlTheme(Locale locale) {
     cardTheme: CardThemeData(
       color: AhlColors.surface,
       elevation: 0,
+      shadowColor: const Color(0x14000000),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        side: const BorderSide(color: Color(0xFFE9E4F5)),
       ),
       margin: EdgeInsets.zero,
     ),
@@ -60,14 +60,15 @@ ThemeData ahlTheme(Locale locale) {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AhlColors.surface,
+      hintStyle: textTheme.bodyLarge?.copyWith(color: AhlColors.inkLight),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFFE9E4F5), width: 1.5),
+        borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFFE9E4F5), width: 1.5),
+        borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),

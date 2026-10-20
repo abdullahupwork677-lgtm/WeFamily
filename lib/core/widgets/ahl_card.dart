@@ -23,14 +23,7 @@ class AhlCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AhlColors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AhlColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AhlColors.primary.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: AhlColors.softShadow,
       ),
       child: child,
     );

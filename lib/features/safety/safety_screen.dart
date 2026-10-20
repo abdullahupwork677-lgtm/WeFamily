@@ -85,12 +85,12 @@ class _SafetyScreenState extends State<SafetyScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Demo mode — no real alerts sent',
+                        l10n.sosDemoNote,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AhlColors.inkMedium),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
-                      TextButton(onPressed: _reset, child: const Text('Reset')),
+                      TextButton(onPressed: _reset, child: Text(l10n.reset)),
                     ],
                   ),
                 ).animate().scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 300.ms)
