@@ -133,19 +133,53 @@ class ChatMessage {
     required this.senderName,
     required this.type,
     this.text,
+    this.mediaUrl,
+    this.thumbUrl,
+    this.width,
+    this.height,
+    this.durationMs,
     this.lat,
     this.lng,
     required this.createdAt,
+    this.status = 'sent',
+    this.localPath,
   });
 
   final String id;
   final String senderUid;
   final String senderName;
-  final String type; // text | location
+  final String type; // text | image | voice | location
   final String? text;
+  final String? mediaUrl;
+  final String? thumbUrl;
+  final double? width;
+  final double? height;
+  final int? durationMs;
   final double? lat;
   final double? lng;
   final DateTime createdAt;
+  final String status; // sending | sent | failed
+
+  /// Local file path for an attachment that has not finished uploading.
+  final String? localPath;
+
+  ChatMessage copyWith({String? status}) => ChatMessage(
+        id: id,
+        senderUid: senderUid,
+        senderName: senderName,
+        type: type,
+        text: text,
+        mediaUrl: mediaUrl,
+        thumbUrl: thumbUrl,
+        width: width,
+        height: height,
+        durationMs: durationMs,
+        lat: lat,
+        lng: lng,
+        createdAt: createdAt,
+        status: status ?? this.status,
+        localPath: localPath,
+      );
 }
 
 class TreePerson {

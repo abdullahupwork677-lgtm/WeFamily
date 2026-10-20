@@ -584,4 +584,65 @@ class AppLocalizationsAr extends AppLocalizations {
   String shareInviteMessage(String code, String link) {
     return 'انضم إلى عائلتي على WeFamily! الرمز: $code | $link';
   }
+
+  @override
+  String get chatEmpty => 'لا توجد رسائل بعد. قل مرحبًا!';
+
+  @override
+  String get attach => 'إرفاق';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get photo => 'صورة';
+
+  @override
+  String get voiceNote => 'رسالة صوتية';
+
+  @override
+  String get holdToRecord => 'اضغط للتسجيل، اسحب للإلغاء';
+
+  @override
+  String get slideToCancel => 'اسحب للإلغاء';
+
+  @override
+  String get releaseToSend => 'أفلت للإرسال';
+
+  @override
+  String get releaseToCancel => 'أفلت للإلغاء';
+
+  @override
+  String get tapToStop => 'اضغط على الميكروفون للإيقاف';
+
+  @override
+  String get micDeniedTitle => 'مطلوب الوصول إلى الميكروفون';
+
+  @override
+  String get micDeniedBody =>
+      'اسمح بالوصول إلى الميكروفون لإرسال رسائل صوتية إلى عائلتك.';
+
+  @override
+  String get quickOnMyWay => 'أنا في الطريق';
+
+  @override
+  String get quickReached => 'لقد وصلت';
+
+  @override
+  String get quickCallMe => 'اتصل بي';
+
+  @override
+  String get openOnMap => 'افتح على الخريطة';
+
+  @override
+  String get recording => 'جارٍ التسجيل';
+
+  @override
+  String get today => 'اليوم';
+
+  @override
+  String get yesterday => 'أمس';
 }

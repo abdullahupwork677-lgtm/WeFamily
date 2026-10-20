@@ -29,4 +29,13 @@ class AppConfig {
   /// Satellite imagery (Esri World Imagery).
   static const String tileSatelliteUrl =
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+
+  /// Cloudinary unsigned uploads (Firebase Storage is not available on the
+  /// current plan). These values are public by design.
+  static const String cloudinaryCloud = 'a14novzi';
+  static const String cloudinaryPreset = 'ml_default';
+  static const String cloudinaryImageUrl =
+      'https://api.cloudinary.com/v1_1/$cloudinaryCloud/image/upload';
+  static const String cloudinaryVideoUrl =
+      'https://api.cloudinary.com/v1_1/$cloudinaryCloud/video/upload';
 }

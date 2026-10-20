@@ -588,4 +588,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String shareInviteMessage(String code, String link) {
     return 'Join my family on WeFamily! Code: $code | $link';
   }
+
+  @override
+  String get chatEmpty => 'No messages yet. Say hello!';
+
+  @override
+  String get attach => 'Attach';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get photo => 'Photo';
+
+  @override
+  String get voiceNote => 'Voice message';
+
+  @override
+  String get holdToRecord => 'Hold to record, slide to cancel';
+
+  @override
+  String get slideToCancel => 'Slide to cancel';
+
+  @override
+  String get releaseToSend => 'Release to send';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get tapToStop => 'Tap the mic to stop';
+
+  @override
+  String get micDeniedTitle => 'Microphone access needed';
+
+  @override
+  String get micDeniedBody =>
+      'Allow microphone access so you can send voice notes to your family.';
+
+  @override
+  String get quickOnMyWay => 'I\'m on my way';
+
+  @override
+  String get quickReached => 'I\'ve reached';
+
+  @override
+  String get quickCallMe => 'Call me';
+
+  @override
+  String get openOnMap => 'Open on map';
+
+  @override
+  String get recording => 'Recording';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
 }

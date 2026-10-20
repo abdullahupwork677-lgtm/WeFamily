@@ -206,3 +206,22 @@ circles/{circleId}/messages/{id} -> {senderId, text, type, lat, lng, createdAt}
   owner-only, delete owner-only). Publish the new rules before two-phone testing.
   Known limitation: Task 5's link-member-to-tree item is deferred because the tree screen still
   uses mock data (no tree datastore yet), so the "green realtime dot" cannot be real.
+
+- 2026-10-20: **Task 6 shipped (functional family chat)**. Chat now streams `circles/{id}/messages`
+  in real time (newest at the bottom, 30-message pagination on scroll-up, date chips, sender
+  avatars/names, localised quick chips, quick "I'm on my way / I've reached / Call me"). Text
+  bubbles are purple for me / white for others (RTL mirrored), with sending / sent / failed+retry
+  states (Firestore `hasPendingWrites` + local failed queue). Photos: camera/gallery sheet,
+  flutter_image_compress (max 1600 px, q80), Cloudinary unsigned upload with per-bubble progress,
+  full-screen zoom viewer. Voice notes: hold-to-record with slide-to-cancel + tap-to-lock,
+  amplitude waveform, 2-minute cap, m4a upload to Cloudinary, playback with just_audio
+  (single player, 1x/1.5x/2x speed). Location messages render a mini map + "Open on map".
+  Offline persistence enabled; unread dot on the Chat tab (last-read timestamp per circle).
+  Android RECORD_AUDIO + iOS microphone/camera/photo descriptions added; messages rules now
+  restrict create to the sender and type whitelist, update/delete to the sender.
+  **Manual step still needed: the Cloudinary preset `ml_default` is not whitelisted for unsigned
+  uploads** (verified: "Upload preset must be whitelisted for unsigned uploads"). In the
+  Cloudinary console, open Settings -> Upload -> Upload presets -> `ml_default` -> set Signing
+  mode to Unsigned (or create an unsigned preset and update `AppConfig.cloudinaryPreset`).
+  FCM push is not implemented (needs Blaze + a Cloud Function); unread badge covers in-app.
+  Task 5 tree-link remains deferred until the tree has a real datastore.

@@ -1189,6 +1189,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join my family on WeFamily! Code: {code} | {link}'**
   String shareInviteMessage(String code, String link);
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Say hello!'**
+  String get chatEmpty;
+
+  /// No description provided for @attach.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach'**
+  String get attach;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photo;
+
+  /// No description provided for @voiceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message'**
+  String get voiceNote;
+
+  /// No description provided for @holdToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to record, slide to cancel'**
+  String get holdToRecord;
+
+  /// No description provided for @slideToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide to cancel'**
+  String get slideToCancel;
+
+  /// No description provided for @releaseToSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to send'**
+  String get releaseToSend;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to cancel'**
+  String get releaseToCancel;
+
+  /// No description provided for @tapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the mic to stop'**
+  String get tapToStop;
+
+  /// No description provided for @micDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access needed'**
+  String get micDeniedTitle;
+
+  /// No description provided for @micDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow microphone access so you can send voice notes to your family.'**
+  String get micDeniedBody;
+
+  /// No description provided for @quickOnMyWay.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m on my way'**
+  String get quickOnMyWay;
+
+  /// No description provided for @quickReached.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve reached'**
+  String get quickReached;
+
+  /// No description provided for @quickCallMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Call me'**
+  String get quickCallMe;
+
+  /// No description provided for @openOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Open on map'**
+  String get openOnMap;
+
+  /// No description provided for @recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording'**
+  String get recording;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
 }
 
 class _AppLocalizationsDelegate

@@ -75,8 +75,10 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>WeFamily uses your location to share it with your family circle for safety, even when the app is in the background.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>WeFamily needs photo access so you can set a profile picture.</string>
+	<string>WeFamily needs photo access so you can share photos in the family chat and set a profile picture.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>WeFamily needs camera access so you can take a profile picture.</string>
+	<string>WeFamily needs camera access so you can take photos for the family chat and your profile picture.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>WeFamily needs microphone access so you can send voice notes to your family.</string>
 </dict>
 </plist>

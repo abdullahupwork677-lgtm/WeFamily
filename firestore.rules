@@ -84,7 +84,12 @@ service cloud.firestore {
       }
 
       match /messages/{messageId} {
-        allow read, write: if isMember(circleId);
+        allow read: if isMember(circleId);
+        allow create: if isMember(circleId) &&
+          request.resource.data.senderUid == request.auth.uid &&
+          request.resource.data.type in ['text', 'image', 'voice', 'location'];
+        allow update, delete: if isMember(circleId) &&
+          resource.data.senderUid == request.auth.uid;
       }
     }
   }

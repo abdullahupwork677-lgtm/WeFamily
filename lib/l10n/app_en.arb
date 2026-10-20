@@ -204,5 +204,25 @@
   "shareInviteMessage": "Join my family on WeFamily! Code: {code} | {link}",
   "@shareInviteMessage": {
     "placeholders": { "code": { "type": "String" }, "link": { "type": "String" } }
-  }
+  },
+  "chatEmpty": "No messages yet. Say hello!",
+  "attach": "Attach",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "photo": "Photo",
+  "voiceNote": "Voice message",
+  "holdToRecord": "Hold to record, slide to cancel",
+  "slideToCancel": "Slide to cancel",
+  "releaseToSend": "Release to send",
+  "releaseToCancel": "Release to cancel",
+  "tapToStop": "Tap the mic to stop",
+  "micDeniedTitle": "Microphone access needed",
+  "micDeniedBody": "Allow microphone access so you can send voice notes to your family.",
+  "quickOnMyWay": "I'm on my way",
+  "quickReached": "I've reached",
+  "quickCallMe": "Call me",
+  "openOnMap": "Open on map",
+  "recording": "Recording",
+  "today": "Today",
+  "yesterday": "Yesterday"
 }
