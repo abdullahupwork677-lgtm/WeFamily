@@ -10,17 +10,17 @@ import 'package:wefamily/l10n/generated/app_localizations.dart';
 import '../../core/constants/config.dart';
 import '../../core/services/location_service.dart';
 import '../../core/services/tile_cache.dart';
+import '../../core/services/tracking_service.dart';
 import '../../core/theme/colors.dart';
+import '../../core/utils/circle_providers.dart';
 import '../../core/widgets/ahl_button.dart';
 import '../../data/models/models.dart';
-import '../../data/repositories/mock_data.dart';
+import '../location/location_permission_sheet.dart';
 import '../member/member_detail_sheet.dart';
 import '../notifications/notifications_screen.dart';
 import '../shell/shell_tab_provider.dart';
 import 'widgets/animated_members_layer.dart';
 import 'widgets/home_sheet.dart';
-
-final membersProvider = Provider<List<CircleMember>>((ref) => MockData.members);
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -41,9 +41,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   static const double _sheetPeek = 0.22;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeAskLocationPermission();
+    });
+  }
+
+  @override
   void dispose() {
     _mapController.dispose();
     super.dispose();
+  }
+
+  Future<void> _maybeAskLocationPermission() async {
+    if (AppConfig.useMockData || !mounted) return;
+    if (!await shouldShowLocationPrompt()) return;
+    if (!mounted) return;
+    await markLocationPromptSeen();
+    if (!mounted) return;
+    await showLocationPermissionSheet(context);
+    final circle = ref.read(myCircleProvider).value;
+    if (circle != null && mounted) {
+      final l10n = AppLocalizations.of(context);
+      await ref.read(trackingControllerProvider.notifier).start(
+            circleId: circle.id,
+            foregroundTitle: l10n.sharingNotificationTitle,
+            foregroundText: l10n.sharingNotificationBody,
+          );
+    }
   }
 
   String get _tileUrl => switch (_styleIndex) {
@@ -97,7 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     showMemberDetailSheet(context, member);
   }
 
-  void _recenter(Position? livePos) {
+  void _recenter(Position? livePos, List<CircleMember> members, String? uid) {
     if (livePos != null) {
       _mapController.move(
         LatLng(livePos.latitude, livePos.longitude),
@@ -105,9 +131,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
       return;
     }
-    final me = MockData.members
-        .where((m) => m.uid == MockData.currentUser.id && m.lat != null)
-        .toList();
+    final me = members.where((m) => m.uid == uid && m.lat != null).toList();
     if (me.isNotEmpty) {
       _mapController.move(LatLng(me.first.lat!, me.first.lng!),
           _mapController.camera.zoom < 14 ? 15 : _mapController.camera.zoom);
@@ -125,11 +149,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Future<void> _shareInvite() async {
+  Future<void> _shareInvite(FamilyCircle? circle) async {
+    final code = circle?.inviteCode;
+    if (code == null || code.isEmpty) {
+      _snack(AppLocalizations.of(context).comingSoon);
+      return;
+    }
     await SharePlus.instance.share(
-      ShareParams(
-        text: '${AppConfig.defaultInviteBase}${MockData.circle.inviteCode}',
-      ),
+      ShareParams(text: '${AppConfig.defaultInviteBase}$code'),
     );
   }
 
@@ -193,7 +220,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Future<void> _openCircleSwitcher() async {
+  Future<void> _openCircleSwitcher(FamilyCircle? circle) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
     await showModalBottomSheet<void>(
       context: context,
@@ -208,11 +235,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(MockData.circle.name,
+              Text(circle?.name ?? l10n.myCircle,
                   style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
               Text(
-                '${MockData.circle.memberUids.length} • ${MockData.circle.inviteCode}',
+                circle == null
+                    ? l10n.loading
+                    : '${circle.memberUids.length} • ${circle.inviteCode}',
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -223,7 +252,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 label: l10n.shareInvite,
                 icon: Icons.share_rounded,
                 gradient: false,
-                onPressed: _shareInvite,
+                onPressed: () => _shareInvite(circle),
               ),
             ],
           ),
@@ -277,8 +306,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final Position? livePos = ref.watch(livePositionProvider).value;
-    ref.listen(livePositionProvider, (previous, next) {
+    final circle = ref.watch(myCircleProvider).value;
+    final circleName = circle?.name ?? l10n.myCircle;
+    final tracking = ref.watch(trackingControllerProvider);
+    final uid = ref.watch(currentUidProvider);
+
+    ref.listen<AsyncValue<FamilyCircle?>>(myCircleProvider, (previous, next) {
+      final active = next.value;
+      if (active != null && !AppConfig.useMockData) {
+        final localizations = AppLocalizations.of(context);
+        ref.read(trackingControllerProvider.notifier).start(
+              circleId: active.id,
+              foregroundTitle: localizations.sharingNotificationTitle,
+              foregroundText: localizations.sharingNotificationBody,
+            );
+      }
+    });
+
+    final Position? livePos = ref.watch(mapPositionProvider).value;
+    ref.listen(mapPositionProvider, (previous, next) {
       final p = next.value;
       if (p != null && !_centeredOnMe) {
         _centeredOnMe = true;
@@ -287,10 +333,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     final now = DateTime.now();
-    final rawMembers = ref.watch(membersProvider);
+    final rawMembers = ref.watch(liveMembersProvider);
     final members = [
       for (final m in rawMembers)
-        if (livePos != null && m.uid == MockData.currentUser.id)
+        if (livePos != null && m.uid == uid)
           m.copyWith(
             lat: livePos.latitude,
             lng: livePos.longitude,
@@ -306,7 +352,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final sheetPx = MediaQuery.of(context).size.height * _sheetPeek;
 
     final LatLng? cachedCenter = ref.read(lastKnownCenterProvider);
-    final selfMember = _byUid(members, MockData.currentUser.id);
+    final selfMember = _byUid(members, uid);
     final LatLng initialCenter = cachedCenter ??
         (selfMember?.lat != null
             ? LatLng(selfMember!.lat!, selfMember.lng!)
@@ -355,7 +401,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               AnimatedMembersLayer(
                 located: located,
-                selfUid: MockData.currentUser.id,
+                selfUid: uid ?? '',
                 selectedUid: _selectedUid,
                 onSelect: _selectAndShow,
               ),
@@ -393,9 +439,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 Expanded(
                   child: Center(
-                    child: _CirclePill(
-                      label: MockData.circle.name,
-                      onTap: _openCircleSwitcher,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _CirclePill(
+                          label: circleName,
+                          onTap: () => _openCircleSwitcher(circle),
+                        ),
+                        if (!AppConfig.useMockData) ...[
+                          const SizedBox(height: 8),
+                          _SharingChip(
+                            tracking: tracking,
+                            onTap: () => showLocationPermissionSheet(context),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -432,7 +490,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 10),
               _RoundButton(
                 icon: Icons.my_location_rounded,
-                onTap: () => _recenter(livePos),
+                onTap: () => _recenter(livePos, members, uid),
               ),
               const SizedBox(height: 10),
               _RoundButton(
@@ -479,13 +537,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const BorderRadius.vertical(top: Radius.circular(32)),
                 child: HomeSheet(
                   scrollController: scrollController,
-                  circleName: MockData.circle.name,
+                  circleName: circleName,
                   members: members,
                   category: _category,
                   onCategoryChanged: (i) => setState(() => _category = i),
                   onMemberTap: _selectAndShow,
-                  onAddPerson: () => _snack(l10n.comingSoon),
-                  onShareInvite: _shareInvite,
+                  onAddPerson: () => _shareInvite(circle),
+                  onShareInvite: () => _shareInvite(circle),
                   onPremiumTap: () => _snack(l10n.comingSoon),
                   tipDismissed: _tipDismissed,
                   onDismissTip: () => setState(() => _tipDismissed = true),
@@ -595,6 +653,57 @@ class _ActionPill extends StatelessWidget {
               label,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: AhlColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+class _SharingChip extends StatelessWidget {
+  const _SharingChip({required this.tracking, required this.onTap});
+
+  final TrackingState tracking;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final Color color = tracking.enabled
+        ? AhlColors.success
+        : tracking.ghost
+            ? AhlColors.inkMedium
+            : AhlColors.danger;
+    final String label = tracking.enabled
+        ? l10n.sharingActive
+        : tracking.ghost
+            ? l10n.sharingPaused
+            : l10n.locationOff;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(999)),
+          boxShadow: AhlColors.softShadowSmall,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AhlColors.inkMedium,
                     fontWeight: FontWeight.w600,
                   ),
             ),

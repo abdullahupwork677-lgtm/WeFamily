@@ -925,6 +925,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes} min'**
   String durationMinutes(int minutes);
+
+  /// No description provided for @locationPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your location with your family'**
+  String get locationPromptTitle;
+
+  /// No description provided for @locationPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your circle sees your live location on the map plus your battery level. Only members of your circle can see it.'**
+  String get locationPromptBody;
+
+  /// No description provided for @locationPromptPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'You can pause sharing anytime with Ghost mode.'**
+  String get locationPromptPrivacy;
+
+  /// No description provided for @shareWhileUsing.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow while using the app'**
+  String get shareWhileUsing;
+
+  /// No description provided for @shareAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow all the time'**
+  String get shareAlways;
+
+  /// No description provided for @allowBackgroundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep sharing in the background'**
+  String get allowBackgroundTitle;
+
+  /// No description provided for @allowBackgroundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'So the map stays live when the app is closed, allow location access all the time. On Android you may need to choose it in settings.'**
+  String get allowBackgroundBody;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettings;
+
+  /// No description provided for @locationDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission needed'**
+  String get locationDeniedTitle;
+
+  /// No description provided for @locationDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is off. Enable it in system settings so your family can see where you are.'**
+  String get locationDeniedBody;
+
+  /// No description provided for @backgroundTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve background reliability'**
+  String get backgroundTipsTitle;
+
+  /// No description provided for @backgroundTipsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Some phones (Xiaomi, Oppo, Vivo, Samsung) stop apps in the background. Allow WeFamily to run without battery restrictions.'**
+  String get backgroundTipsBody;
+
+  /// No description provided for @disableOptimization.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable battery optimization'**
+  String get disableOptimization;
+
+  /// No description provided for @offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
+
+  /// No description provided for @myCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'My circle'**
+  String get myCircle;
+
+  /// No description provided for @sharingNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'WeFamily is sharing your location'**
+  String get sharingNotificationTitle;
+
+  /// No description provided for @sharingNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your family can see your live location.'**
+  String get sharingNotificationBody;
+
+  /// No description provided for @enterCircleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a circle name'**
+  String get enterCircleName;
 }
 
 class _AppLocalizationsDelegate

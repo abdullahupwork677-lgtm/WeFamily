@@ -57,7 +57,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             .signInWithEmailAndPassword(email: email, password: password);
       }
       await ref.read(sessionProvider.notifier).login(email);
-      if (mounted) context.go('/profile-setup');
+      if (!AppConfig.useMockData) {
+        try {
+          await ref
+              .read(sessionProvider.notifier)
+              .syncWithBackend()
+              .timeout(const Duration(seconds: 5));
+        } catch (_) {
+          // Continue with the locally known state.
+        }
+      }
+      if (!mounted) return;
+      final hasCircle = ref.read(sessionProvider).hasCircle;
+      context.go(hasCircle ? '/home' : '/profile-setup');
     } on FirebaseAuthException catch (e) {
       _showMessage(e.message ?? l10n.authFailed);
     } catch (_) {

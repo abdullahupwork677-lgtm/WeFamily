@@ -1,5 +1,8 @@
 class AppConfig {
-  static const bool useMockData = true;
+  /// Real Firebase mode by default. Demo builds/tests can opt in with
+  /// `--dart-define=USE_MOCK_DATA=true`.
+  static const bool useMockData =
+      bool.fromEnvironment('USE_MOCK_DATA', defaultValue: false);
   static const String appName = 'WeFamily';
   static const String defaultInviteBase = 'https://wefamily.app/join/';
 

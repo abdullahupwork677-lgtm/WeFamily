@@ -442,4 +442,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String durationMinutes(int minutes) {
     return '$minutes min';
   }
+
+  @override
+  String get locationPromptTitle => 'Share your location with your family';
+
+  @override
+  String get locationPromptBody =>
+      'Your circle sees your live location on the map plus your battery level. Only members of your circle can see it.';
+
+  @override
+  String get locationPromptPrivacy =>
+      'You can pause sharing anytime with Ghost mode.';
+
+  @override
+  String get shareWhileUsing => 'Allow while using the app';
+
+  @override
+  String get shareAlways => 'Allow all the time';
+
+  @override
+  String get allowBackgroundTitle => 'Keep sharing in the background';
+
+  @override
+  String get allowBackgroundBody =>
+      'So the map stays live when the app is closed, allow location access all the time. On Android you may need to choose it in settings.';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get openSettings => 'Open settings';
+
+  @override
+  String get locationDeniedTitle => 'Location permission needed';
+
+  @override
+  String get locationDeniedBody =>
+      'Location access is off. Enable it in system settings so your family can see where you are.';
+
+  @override
+  String get backgroundTipsTitle => 'Improve background reliability';
+
+  @override
+  String get backgroundTipsBody =>
+      'Some phones (Xiaomi, Oppo, Vivo, Samsung) stop apps in the background. Allow WeFamily to run without battery restrictions.';
+
+  @override
+  String get disableOptimization => 'Disable battery optimization';
+
+  @override
+  String get offline => 'Offline';
+
+  @override
+  String get myCircle => 'My circle';
+
+  @override
+  String get sharingNotificationTitle => 'WeFamily is sharing your location';
+
+  @override
+  String get sharingNotificationBody =>
+      'Your family can see your live location.';
+
+  @override
+  String get enterCircleName => 'Enter a circle name';
 }

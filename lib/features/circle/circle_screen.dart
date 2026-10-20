@@ -28,20 +28,45 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
     super.dispose();
   }
 
+  void _showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Future<void> _create(AppLocalizations l10n) async {
     final name = _nameController.text.trim();
-    if (name.isEmpty && !AppConfig.useMockData) return;
-    await ref
-        .read(sessionProvider.notifier)
-        .createOrJoinCircle(name.isEmpty ? 'My Family' : name);
-    if (mounted) context.go('/home');
+    if (name.isEmpty && !AppConfig.useMockData) {
+      _showMessage(l10n.enterCircleName);
+      return;
+    }
+    try {
+      await ref
+          .read(sessionProvider.notifier)
+          .createOrJoinCircle(name.isEmpty ? 'My Family' : name);
+      if (mounted) context.go('/home');
+    } catch (_) {
+      _showMessage(l10n.error);
+    }
   }
 
   Future<void> _join(AppLocalizations l10n) async {
     final code = _codeController.text.trim();
-    if (code.isEmpty && !AppConfig.useMockData) return;
-    await ref.read(sessionProvider.notifier).createOrJoinCircle('My Family');
-    if (mounted) context.go('/home');
+    if (!AppConfig.useMockData) {
+      _showMessage(l10n.comingSoon);
+      return;
+    }
+    if (code.isEmpty) {
+      _showMessage(l10n.inviteCodeHint);
+      return;
+    }
+    try {
+      await ref.read(sessionProvider.notifier).createOrJoinCircle('My Family');
+      if (mounted) context.go('/home');
+    } catch (_) {
+      _showMessage(l10n.error);
+    }
   }
 
   @override
@@ -90,21 +115,23 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
                 const SizedBox(height: 24),
                 AhlButton(label: l10n.createCircle, onPressed: () => _create(l10n)),
                 const SizedBox(height: 24),
-                Center(child: Text(l10n.or, style: Theme.of(context).textTheme.bodyMedium)),
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    SharePlus.instance.share(
-                      ShareParams(text: '${AppConfig.defaultInviteBase}K7M2P9'),
-                    );
-                  },
-                  icon: const Icon(Icons.share_outlined),
-                  label: Text(l10n.shareInvite),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                    shape: const StadiumBorder(),
+                if (AppConfig.useMockData) ...[
+                  Center(child: Text(l10n.or, style: Theme.of(context).textTheme.bodyMedium)),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      SharePlus.instance.share(
+                        ShareParams(text: '${AppConfig.defaultInviteBase}K7M2P9'),
+                      );
+                    },
+                    icon: const Icon(Icons.share_outlined),
+                    label: Text(l10n.shareInvite),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                      shape: const StadiumBorder(),
+                    ),
                   ),
-                ),
+                ],
               ] else ...[
                 TextField(
                   controller: _codeController,

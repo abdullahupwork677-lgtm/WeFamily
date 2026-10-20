@@ -179,3 +179,17 @@ circles/{circleId}/messages/{id} -> {senderId, text, type, lat, lng, createdAt}
   fit-all), Check in / SOS pills, 3-snap draggable sheet with premium banner, icon tabs, member
   cards, invite tip card and add-person card. Home shortcuts switch the shell tab via
   `shellTabProvider`.
+- 2026-10-20: **Task 4 shipped (real location sharing)**. Real Firebase mode is now the default
+  (`useMockData = false`; tests run with `--dart-define=USE_MOCK_DATA=true`). Added:
+  `TrackingController` with one GPS stream (`distanceFilter` 15 m, high accuracy) wrapped in an
+  Android foreground service and iOS background mode, write policy (15 m / 10 s cap, 30 s while
+  moving, 2 min stationary heartbeat), automatic `sinceAt` reset after 150 m, reverse geocoding
+  every ~200 m (`placeLabel`), battery level via `battery_plus`, ghost mode / pause that writes
+  immediately, and a friendly permission sheet (while-in-use, all-the-time, permanently denied with
+  Open settings, battery optimisation guide). `CircleRepository` creates circles + unique invite
+  codes transactionally, syncs members live from `circles/{id}/members`, and stores `lastLocation`
+  as a nested map with server timestamps. Profile names are stored in `users/{uid}`. Home and
+  Settings now read/write real data; splash/login sync profile + membership. Added
+  `firestore.rules` (publish it in the console) and the Android/iOS permission entries.
+  Build note: re-adding `cloud_firestore` overflowed D8 at 3072m; `-Xmx4096m` with
+  `org.gradle.parallel=false` fixed `mergeExtDexRelease` (APK 27.7 MB).

@@ -252,12 +252,12 @@ class _MemberCard extends StatelessWidget {
     final Duration? age = updated == null ? null : DateTime.now().difference(updated);
     final bool stale = age != null && age.inMinutes > 10;
     final int? battery = member.batteryLevel;
-    final String statusText = member.ghostMode
+    final String statusText = (!member.sharingLocation || member.ghostMode)
         ? l10n.sharingPaused
         : stale
-            ? l10n.locationNotUpdating
+            ? l10n.offline
             : member.placeLabel ?? l10n.location;
-    final Color statusColor = member.ghostMode
+    final Color statusColor = (!member.sharingLocation || member.ghostMode)
         ? AhlColors.inkMedium
         : stale
             ? AhlColors.danger

@@ -60,37 +60,43 @@ final lastKnownCenterProvider = Provider<LatLng?>((ref) => null);
 
 const Duration _minPositionInterval = Duration(seconds: 1);
 
-/// Live device position. Emits null when permission is denied or GPS is off.
-/// Position events are throttled to at most 1 per second for UI stability.
-final livePositionProvider = StreamProvider<Position?>((ref) async* {
+/// Raw stream of the live device position. Emits null when permission is
+/// denied or GPS is off. Throttled to at most 1 event per second.
+final livePositionStreamProvider = Provider<Stream<Position?>>((ref) {
   final service = ref.watch(locationServiceProvider);
-  try {
-    if (!await service.ensurePermission()) {
-      yield null;
-      return;
-    }
-    if (!await Geolocator.isLocationServiceEnabled()) {
-      yield null;
-      return;
-    }
-    final first = await service.current();
-    DateTime? lastEmitted;
-    if (first != null) {
-      lastEmitted = DateTime.now();
-      unawaited(service.persist(first));
-      yield first;
-    }
-    await for (final position in service.watch()) {
-      final now = DateTime.now();
-      if (lastEmitted != null &&
-          now.difference(lastEmitted) < _minPositionInterval) {
-        continue;
+  return () async* {
+    try {
+      if (!await service.ensurePermission()) {
+        yield null;
+        return;
       }
-      lastEmitted = now;
-      unawaited(service.persist(position));
-      yield position;
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        yield null;
+        return;
+      }
+      final first = await service.current();
+      DateTime? lastEmitted;
+      if (first != null) {
+        lastEmitted = DateTime.now();
+        unawaited(service.persist(first));
+        yield first;
+      }
+      await for (final position in service.watch()) {
+        final now = DateTime.now();
+        if (lastEmitted != null &&
+            now.difference(lastEmitted) < _minPositionInterval) {
+          continue;
+        }
+        lastEmitted = now;
+        unawaited(service.persist(position));
+        yield position;
+      }
+    } catch (_) {
+      yield null;
     }
-  } catch (_) {
-    yield null;
-  }
+  }();
 });
+
+/// Live device position for demo mode.
+final livePositionProvider =
+    StreamProvider<Position?>((ref) => ref.watch(livePositionStreamProvider));

@@ -440,4 +440,66 @@ class AppLocalizationsAr extends AppLocalizations {
   String durationMinutes(int minutes) {
     return '$minutes دقيقة';
   }
+
+  @override
+  String get locationPromptTitle => 'شارك موقعك مع عائلتك';
+
+  @override
+  String get locationPromptBody =>
+      'ترى دائرتك موقعك المباشر على الخريطة مع مستوى بطارية جهازك. لا يراه إلا أعضاء دائرتك.';
+
+  @override
+  String get locationPromptPrivacy =>
+      'يمكنك إيقاف المشاركة في أي وقت عبر وضع التخفي.';
+
+  @override
+  String get shareWhileUsing => 'السماح أثناء استخدام التطبيق';
+
+  @override
+  String get shareAlways => 'السماح دائمًا';
+
+  @override
+  String get allowBackgroundTitle => 'استمر في المشاركة في الخلفية';
+
+  @override
+  String get allowBackgroundBody =>
+      'لتبقى الخريطة محدثة عند إغلاق التطبيق، اسمح بالوصول إلى الموقع دائمًا. قد تحتاج إلى اختيار ذلك من الإعدادات على أندرويد.';
+
+  @override
+  String get notNow => 'ليس الآن';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get locationDeniedTitle => 'إذن الموقع مطلوب';
+
+  @override
+  String get locationDeniedBody =>
+      'الوصول إلى الموقع متوقف. فعّله من إعدادات النظام ليتمكن أفراد عائلتك من معرفة مكانك.';
+
+  @override
+  String get backgroundTipsTitle => 'حسّن الاستمرارية في الخلفية';
+
+  @override
+  String get backgroundTipsBody =>
+      'بعض الهواتف (شاومي، أوبو، فيفو، سامسونج) توقف التطبيقات في الخلفية. اسمح لـ WeFamily بالعمل دون قيود البطارية.';
+
+  @override
+  String get disableOptimization => 'إيقاف تحسين البطارية';
+
+  @override
+  String get offline => 'غير متصل';
+
+  @override
+  String get myCircle => 'دائرتي';
+
+  @override
+  String get sharingNotificationTitle => 'WeFamily يشارك موقعك';
+
+  @override
+  String get sharingNotificationBody => 'يمكن لعائلتك رؤية موقعك المباشر.';
+
+  @override
+  String get enterCircleName => 'أدخل اسم الدائرة';
 }

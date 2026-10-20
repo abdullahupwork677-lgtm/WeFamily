@@ -22,6 +22,15 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   DateTime? _birthDate;
 
   @override
+  void initState() {
+    super.initState();
+    final name = ref.read(sessionProvider).user?.name;
+    if (name != null && name.isNotEmpty) {
+      _nameController.text = name;
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     super.dispose();

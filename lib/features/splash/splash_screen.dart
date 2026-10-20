@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
 
+import '../../core/constants/config.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/session_provider.dart';
@@ -34,6 +35,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       // navigate with whatever state we have instead of getting stuck
     }
     final User? authUser = await firstAuthUser();
+    if (authUser != null && !AppConfig.useMockData) {
+      try {
+        await ref
+            .read(sessionProvider.notifier)
+            .syncWithBackend()
+            .timeout(const Duration(seconds: 5));
+      } catch (_) {
+        // Offline start: use the cached membership state.
+      }
+    }
     _navigate(authUser);
   }
 

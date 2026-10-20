@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wefamily/app/app.dart';
+import 'package:wefamily/core/constants/config.dart';
 
 Future<void> _startAtLogin(WidgetTester tester) async {
   SharedPreferences.setMockInitialValues({'onboarding_seen': true});
@@ -17,6 +18,7 @@ Future<void> _skipLogin(WidgetTester tester) async {
 }
 
 void main() {
+  group('demo auth flow', () {
   testWidgets('skip on login navigates to profile setup', (tester) async {
     await _startAtLogin(tester);
 
@@ -116,4 +118,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Create your family circle'), findsOneWidget);
   });
+  }, skip: AppConfig.useMockData
+      ? false
+      : 'Run with --dart-define=USE_MOCK_DATA=true for the demo flow tests');
 }
