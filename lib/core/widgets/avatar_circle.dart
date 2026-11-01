@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/colors.dart';
 
 class AvatarCircle extends StatelessWidget {
@@ -60,7 +61,8 @@ class AvatarCircle extends StatelessWidget {
                     width: size,
                     height: size,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => _initialsWidget(context),
+                    errorBuilder: (context, error, stackTrace) =>
+                        _initialsWidget(context),
                   ),
                 )
               : _initialsWidget(context),
@@ -87,10 +89,10 @@ class AvatarCircle extends StatelessWidget {
     return Text(
       _initials,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: _color,
-            fontWeight: FontWeight.w700,
-            fontSize: size * 0.35,
-          ),
+        color: _color,
+        fontWeight: FontWeight.w700,
+        fontSize: size * 0.35,
+      ),
     );
   }
 }

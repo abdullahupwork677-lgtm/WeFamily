@@ -14,8 +14,11 @@ import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_card.dart';
 import '../../core/widgets/ahl_button.dart';
 import '../../core/widgets/avatar_circle.dart';
+import '../../core/widgets/icon_3d.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../data/models/models.dart';
 import '../../data/repositories/circle_repository.dart';
+import 'circle_screen.dart';
 
 class CircleManagementScreen extends ConsumerStatefulWidget {
   const CircleManagementScreen({super.key});
@@ -25,7 +28,8 @@ class CircleManagementScreen extends ConsumerStatefulWidget {
       _CircleManagementScreenState();
 }
 
-class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen> {
+class _CircleManagementScreenState
+    extends ConsumerState<CircleManagementScreen> {
   bool _busy = false;
 
   void _snack(String message) {
@@ -144,7 +148,11 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
     }
   }
 
-  Future<void> _leave(AppLocalizations l10n, FamilyCircle circle, String uid) async {
+  Future<void> _leave(
+    AppLocalizations l10n,
+    FamilyCircle circle,
+    String uid,
+  ) async {
     if (AppConfig.useMockData) {
       _snack(l10n.comingSoon);
       return;
@@ -174,6 +182,51 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _switchCircle(
+    AppLocalizations l10n,
+    FamilyCircle circle,
+  ) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final tracking = ref.read(trackingControllerProvider);
+      final restarted = tracking.status == TrackingStatus.active;
+      if (restarted) {
+        await ref
+            .read(trackingControllerProvider.notifier)
+            .stop(writePaused: false);
+      }
+      await ref.read(sessionProvider.notifier).adoptCircle(circle);
+      if (restarted) {
+        try {
+          await ref
+              .read(trackingControllerProvider.notifier)
+              .start(
+                circleId: circle.id,
+                foregroundTitle: l10n.sharingNotificationTitle,
+                foregroundText: l10n.sharingNotificationBody,
+              );
+        } catch (_) {
+          // Location can be re-enabled from Settings.
+        }
+      }
+      _snack(l10n.switchedCircle(circle.name));
+    } catch (_) {
+      _snack(l10n.error);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  void _openAddCircle() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) => const CircleScreen(addMode: true),
+      ),
+    );
   }
 
   Future<void> _delete(AppLocalizations l10n, FamilyCircle circle) async {
@@ -213,35 +266,47 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
     final AppLocalizations l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionProvider);
     final uid = ref.watch(currentUidProvider);
-    final streamCircle =
-        AppConfig.useMockData ? null : ref.watch(myCircleProvider).value;
-    final circle = streamCircle ?? session.circle;
+    final circleAsync = AppConfig.useMockData
+        ? null
+        : ref.watch(myCircleProvider);
+    final circle = circleAsync?.value ?? session.circle;
+    final circleLoading = circleAsync?.isLoading ?? false;
+    final membersAsync = ref.watch(circleMembersProvider);
     final members = ref.watch(liveMembersProvider);
+    final membersLoading = membersAsync.isLoading;
+    final circles =
+        ref.watch(myCirclesProvider).value ??
+        (circle == null ? const <FamilyCircle>[] : [circle]);
+    final activeCircleId =
+        ref.watch(activeCircleIdProvider) ?? circle?.id;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.manageCircle)),
       body: SafeArea(
         child: circle == null
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.group_off_rounded,
-                          size: 40, color: AhlColors.outline),
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.empty,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(color: AhlColors.inkMedium),
+            ? (circleLoading
+                  ? const SkeletonList(count: 4)
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.group_off_rounded,
+                              size: 40,
+                              color: AhlColors.outline,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l10n.empty,
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(color: AhlColors.inkMedium),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              )
+                    ))
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
@@ -255,8 +320,10 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                             color: AhlColors.placeholder,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.family_restroom_rounded,
-                              color: AhlColors.primary),
+                          child: const Icon(
+                            Icons.family_restroom_rounded,
+                            color: AhlColors.primary,
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -265,17 +332,13 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                             children: [
                               Text(
                                 circle.name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
+                                style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(fontWeight: FontWeight.w800),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 '${l10n.circleMembers} · ${circle.memberUids.length}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(color: AhlColors.inkMedium),
                               ),
                             ],
@@ -284,16 +347,75 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
+                  Text(
+                    l10n.myCircles,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 10),
+                  for (final item in circles)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: AhlCard(
+                        padding: EdgeInsets.zero,
+                        child: ListTile(
+                          leading: const Icon3D('folder-new', size: 30),
+                          title: Text(
+                            item.name,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          subtitle: Text(
+                            '${l10n.circleMembers} · ${item.memberUids.length}',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AhlColors.inkMedium),
+                          ),
+                          trailing: item.id == activeCircleId
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AhlColors.success.withValues(
+                                      alpha: 0.12,
+                                    ),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    l10n.activeCircle,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: AhlColors.success,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                )
+                              : const Icon(Icons.swap_horiz_rounded),
+                          onTap: _busy || item.id == activeCircleId
+                              ? null
+                              : () => _switchCircle(l10n, item),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 6),
+                  AhlButton(
+                    label: l10n.joinAnotherCircle,
+                    asset: 'link',
+                    gradient: false,
+                    onPressed: _busy ? null : _openAddCircle,
+                  ),
+                  const SizedBox(height: 20),
                   AhlCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           l10n.inviteCode,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
+                          style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: AhlColors.inkMedium),
                         ),
                         const SizedBox(height: 6),
@@ -314,8 +436,10 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                             IconButton(
                               onPressed: () =>
                                   _copyCode(l10n, circle.inviteCode),
-                              icon: const Icon(Icons.copy_rounded,
-                                  color: AhlColors.primary),
+                              icon: const Icon(
+                                Icons.copy_rounded,
+                                color: AhlColors.primary,
+                              ),
                               tooltip: l10n.copyCode,
                             ),
                           ],
@@ -331,7 +455,8 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                           label: l10n.whatsapp,
                           icon: Icons.chat_rounded,
                           gradient: false,
-                          onPressed: () => _shareWhatsApp(l10n, circle.inviteCode),
+                          onPressed: () =>
+                              _shareWhatsApp(l10n, circle.inviteCode),
                         ),
                         if (circle.ownerUid == uid) ...[
                           const SizedBox(height: 4),
@@ -341,8 +466,10 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                               onPressed: _busy
                                   ? null
                                   : () => _regenerate(l10n, circle),
-                              icon: const Icon(Icons.autorenew_rounded,
-                                  size: 18),
+                              icon: const Icon(
+                                Icons.autorenew_rounded,
+                                size: 18,
+                              ),
                               label: Text(l10n.regenerateCode),
                             ),
                           ),
@@ -353,66 +480,75 @@ class _CircleManagementScreenState extends ConsumerState<CircleManagementScreen>
                   const SizedBox(height: 20),
                   Text(
                     l10n.circleMembers,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
+                    style: Theme.of(context).textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 10),
-                  for (final member in members)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: AhlCard(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            AvatarCircle(
-                              name: member.name,
-                              photoUrl: member.photoUrl,
-                              size: 44,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    member.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.w700),
-                                  ),
-                                  Text(
-                                    member.uid == circle.ownerUid
-                                        ? l10n.owner
-                                        : l10n.circleMembers,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                            color: AhlColors.inkMedium),
-                                  ),
-                                ],
+                  if (membersLoading && members.isEmpty)
+                    for (var i = 0; i < 3; i++)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: SkeletonMemberTile(),
+                      )
+                  else
+                    for (final member in members)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: AhlCard(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              AvatarCircle(
+                                name: member.name,
+                                photoUrl: member.photoUrl,
+                                size: 44,
                               ),
-                            ),
-                            if (circle.ownerUid == uid &&
-                                member.uid != uid &&
-                                member.uid != circle.ownerUid)
-                              IconButton(
-                                onPressed: _busy
-                                    ? null
-                                    : () =>
-                                        _removeMember(l10n, circle, member),
-                                icon: const Icon(Icons.person_remove_rounded,
-                                    color: AhlColors.danger),
-                                tooltip: l10n.removeMember,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      member.name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                    ),
+                                    Text(
+                                      member.uid == circle.ownerUid
+                                          ? l10n.owner
+                                          : l10n.circleMembers,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: AhlColors.inkMedium,
+                                          ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                          ],
+                              if (circle.ownerUid == uid &&
+                                  member.uid != uid &&
+                                  member.uid != circle.ownerUid)
+                                IconButton(
+                                  onPressed: _busy
+                                      ? null
+                                      : () =>
+                                            _removeMember(l10n, circle, member),
+                                  icon: const Icon(
+                                    Icons.person_remove_rounded,
+                                    color: AhlColors.danger,
+                                  ),
+                                  tooltip: l10n.removeMember,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                   const SizedBox(height: 12),
                   if (circle.ownerUid == uid)
                     AhlButton(

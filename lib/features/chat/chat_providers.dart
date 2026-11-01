@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +22,7 @@ class ChatState {
     this.progress = const <String, double>{},
     this.hasMore = false,
     this.loadingOlder = false,
+    this.loading = false,
     this.error,
   });
 
@@ -31,6 +32,7 @@ class ChatState {
   final Map<String, double> progress;
   final bool hasMore;
   final bool loadingOlder;
+  final bool loading;
   final String? error;
 
   List<ChatMessage> get all {
@@ -46,6 +48,7 @@ class ChatState {
     Map<String, double>? progress,
     bool? hasMore,
     bool? loadingOlder,
+    bool? loading,
     String? error,
     bool clearError = false,
   }) {
@@ -56,6 +59,7 @@ class ChatState {
       progress: progress ?? this.progress,
       hasMore: hasMore ?? this.hasMore,
       loadingOlder: loadingOlder ?? this.loadingOlder,
+      loading: loading ?? this.loading,
       error: clearError ? null : (error ?? this.error),
     );
   }
@@ -80,12 +84,16 @@ class ChatController extends Notifier<ChatState> {
       );
     }
 
-    final circleId =
-        ref.watch(myCircleProvider.select((value) => value.value?.id));
+    final circleId = ref.watch(
+      myCircleProvider.select((value) => value.value?.id),
+    );
     _circleId = circleId;
     _limit = 30;
+    if (circleId == null) {
+      return const ChatState();
+    }
     _subscribe();
-    return const ChatState();
+    return const ChatState(loading: true);
   }
 
   void _subscribe() {
@@ -96,26 +104,38 @@ class ChatController extends Notifier<ChatState> {
         .read(chatRepositoryProvider)
         .watchMessages(circleId, limit: _limit)
         .listen(
-      (messages) {
-        state = state.copyWith(
-          messages: messages,
-          hasMore: messages.length >= _limit,
-          loadingOlder: false,
-          clearError: true,
+          (messages) {
+            state = state.copyWith(
+              messages: messages,
+              hasMore: messages.length >= _limit,
+              loadingOlder: false,
+              loading: false,
+              clearError: true,
+            );
+          },
+          onError: (Object error) {
+            state = state.copyWith(
+              loadingOlder: false,
+              loading: false,
+              error: error.toString(),
+            );
+          },
         );
-      },
-      onError: (Object error) {
-        state = state.copyWith(
-          loadingOlder: false,
-          error: error.toString(),
-        );
-      },
+  }
+
+  /// Resubscribes after a Firestore/permission error.
+  void retryLoad() {
+    if (_circleId == null) return;
+    state = state.copyWith(
+      loading: true,
+      loadingOlder: false,
+      clearError: true,
     );
+    _subscribe();
   }
 
   String get _uid => ref.read(currentUidProvider) ?? '';
-  String get _senderName =>
-      ref.read(sessionProvider).user?.name ?? 'Member';
+  String get _senderName => ref.read(sessionProvider).user?.name ?? 'Member';
 
   void clearError() {
     if (state.error != null) state = state.copyWith(clearError: true);
@@ -138,7 +158,9 @@ class ChatController extends Notifier<ChatState> {
     final circleId = _circleId;
     if (circleId == null) return;
     try {
-      await ref.read(chatRepositoryProvider).sendText(
+      await ref
+          .read(chatRepositoryProvider)
+          .sendText(
             circleId: circleId,
             uid: _uid,
             name: _senderName,
@@ -161,11 +183,7 @@ class ChatController extends Notifier<ChatState> {
 
   Future<void> sendLocation() async {
     if (AppConfig.useMockData) {
-      _addMock(
-        type: 'location',
-        lat: 24.7136,
-        lng: 46.6753,
-      );
+      _addMock(type: 'location', lat: 24.7136, lng: 46.6753);
       return;
     }
     final circleId = _circleId;
@@ -195,7 +213,9 @@ class ChatController extends Notifier<ChatState> {
       return;
     }
     try {
-      await ref.read(chatRepositoryProvider).sendLocation(
+      await ref
+          .read(chatRepositoryProvider)
+          .sendLocation(
             circleId: circleId,
             uid: _uid,
             name: _senderName,
@@ -236,7 +256,9 @@ class ChatController extends Notifier<ChatState> {
     );
     state = state.copyWith(pending: [...state.pending, draft]);
     try {
-      await ref.read(chatRepositoryProvider).uploadAndSendImage(
+      await ref
+          .read(chatRepositoryProvider)
+          .uploadAndSendImage(
             circleId: circleId,
             uid: _uid,
             name: _senderName,
@@ -269,7 +291,9 @@ class ChatController extends Notifier<ChatState> {
     );
     state = state.copyWith(pending: [...state.pending, draft]);
     try {
-      await ref.read(chatRepositoryProvider).uploadAndSendVoice(
+      await ref
+          .read(chatRepositoryProvider)
+          .uploadAndSendVoice(
             circleId: circleId,
             uid: _uid,
             name: _senderName,
@@ -350,18 +374,23 @@ class ChatController extends Notifier<ChatState> {
   }
 }
 
-final chatControllerProvider =
-    NotifierProvider<ChatController, ChatState>(ChatController.new);
+final chatControllerProvider = NotifierProvider<ChatController, ChatState>(
+  ChatController.new,
+);
 
 final latestChatProvider = StreamProvider<List<ChatMessage>>((ref) {
   if (AppConfig.useMockData) return Stream.value(const <ChatMessage>[]);
-  final circleId = ref.watch(myCircleProvider.select((value) => value.value?.id));
+  final circleId = ref.watch(
+    myCircleProvider.select((value) => value.value?.id),
+  );
   if (circleId == null) return Stream.value(const <ChatMessage>[]);
   return ref.watch(chatRepositoryProvider).watchMessages(circleId, limit: 25);
 });
 
 final chatLastReadProvider = FutureProvider<DateTime?>((ref) async {
-  final circleId = ref.watch(myCircleProvider.select((value) => value.value?.id));
+  final circleId = ref.watch(
+    myCircleProvider.select((value) => value.value?.id),
+  );
   if (circleId == null) return null;
   final prefs = await SharedPreferences.getInstance();
   final millis = prefs.getInt('chat_read_$circleId');
@@ -434,7 +463,8 @@ class VoicePlayerNotifier extends Notifier<VoicePlaybackState> {
     });
     _player.playerStateStream.listen((playerState) {
       if (_disposed || state.messageId == null) return;
-      final playing = playerState.playing &&
+      final playing =
+          playerState.playing &&
           playerState.processingState != ProcessingState.completed;
       state = state.copyWith(playing: playing);
     });
@@ -496,5 +526,5 @@ class VoicePlayerNotifier extends Notifier<VoicePlaybackState> {
 
 final voicePlayerProvider =
     NotifierProvider<VoicePlayerNotifier, VoicePlaybackState>(
-  VoicePlayerNotifier.new,
-);
+      VoicePlayerNotifier.new,
+    );

@@ -1,8 +1,9 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,6 +12,10 @@ import 'package:wefamily/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/utils/circle_providers.dart';
+import '../../core/widgets/avatar_circle.dart';
+import '../../core/widgets/icon_3d.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../data/models/models.dart';
 import '../shell/shell_tab_provider.dart';
 import 'chat_providers.dart';
 import 'widgets/chat_bubbles.dart';
@@ -38,6 +43,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _locked = false;
   bool _cancelHint = false;
   bool _recordBusy = false;
+  bool _recordStarting = false;
+  bool _stopRequested = false;
+  bool _cancelRequested = false;
   double _startDx = 0;
   Duration _elapsed = Duration.zero;
   List<double> _amplitudes = const <double>[];
@@ -117,20 +125,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             const SizedBox(height: 14),
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined,
-                  color: AhlColors.primary),
+              leading: const Icon3D('camera', size: 30),
               title: Text(l10n.camera),
               onTap: () => Navigator.of(context).pop('camera'),
             ),
             ListTile(
-              leading:
-                  const Icon(Icons.photo_library_outlined, color: AhlColors.primary),
+              leading: const Icon3D('folder-new', size: 30),
               title: Text(l10n.gallery),
               onTap: () => Navigator.of(context).pop('gallery'),
             ),
             ListTile(
-              leading: const Icon(Icons.location_on_outlined,
-                  color: AhlColors.primary),
+              leading: const Icon3D('map-pin', size: 30),
               title: Text(l10n.sendLocation),
               onTap: () => Navigator.of(context).pop('location'),
             ),
@@ -163,9 +168,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  Future<void> _startRecording({required bool locked, double startDx = 0}) async {
+  Future<void> _startRecording({
+    required bool locked,
+    double startDx = 0,
+  }) async {
     if (_recordBusy || _recording) return;
     _recordBusy = true;
+    _recordStarting = true;
+    _stopRequested = false;
+    _cancelRequested = false;
     try {
       final hasPermission = await _rec.hasPermission();
       if (!hasPermission) {
@@ -199,14 +210,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _amplitudeSub = _rec
           .onAmplitudeChanged(const Duration(milliseconds: 120))
           .listen((amplitude) {
-        if (!mounted || !_recording) return;
-        final level = ((amplitude.current + 60) / 60).clamp(0.05, 1.0);
-        setState(() {
-          _amplitudes = [..._amplitudes.take(29), level];
-        });
-      });
-      _recordTimer =
-          Timer.periodic(const Duration(milliseconds: 100), (timer) {
+            if (!mounted || !_recording) return;
+            final level = ((amplitude.current + 60) / 60).clamp(0.05, 1.0);
+            setState(() {
+              _amplitudes = [..._amplitudes.take(29), level];
+            });
+          });
+      _recordTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
         if (!mounted || !_recording) return;
         setState(() {
           _elapsed += const Duration(milliseconds: 100);
@@ -215,10 +225,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _finishRecording(send: true);
         }
       });
+      if (_stopRequested) {
+        final cancel = _cancelRequested;
+        _stopRequested = false;
+        _cancelRequested = false;
+        if (cancel) {
+          await _cancelRecording();
+        } else {
+          await _finishRecording(send: true);
+        }
+      }
     } catch (_) {
       if (mounted) _snack(AppLocalizations.of(context).error);
     } finally {
       _recordBusy = false;
+      _recordStarting = false;
+      if (!_recording) {
+        _stopRequested = false;
+        _cancelRequested = false;
+      }
     }
   }
 
@@ -306,8 +331,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final chat = ref.watch(chatControllerProvider);
     final members = ref.watch(liveMembersProvider);
     final uid = ref.watch(currentUidProvider);
-    final circleId =
-        ref.watch(myCircleProvider.select((value) => value.value?.id));
+    final circleId = ref.watch(
+      myCircleProvider.select((value) => value.value?.id),
+    );
     final circleName = ref.watch(
       myCircleProvider.select((value) => value.value?.name),
     );
@@ -315,6 +341,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     final membersByUid = {for (final member in members) member.uid: member};
     final all = chat.all;
+    final loadingChat = chat.loading && all.isEmpty;
+    final int onlineCount = members.where((member) => member.isLive).length;
+    final headerAvatars = members.take(3).toList(growable: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _markRead(circleId, activeTab);
@@ -324,219 +353,396 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final error = next.error;
       if (error != null && previous?.error != error) {
         _snack(error == 'location-unavailable' ? l10n.locationOff : l10n.error);
-        ref.read(chatControllerProvider.notifier).clearError();
+        if (error == 'location-unavailable') {
+          ref.read(chatControllerProvider.notifier).clearError();
+        }
       }
     });
 
     return Scaffold(
+      backgroundColor: AhlColors.background,
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: AhlColors.primary,
+        foregroundColor: Colors.white,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        toolbarHeight: 82,
+        titleSpacing: 16,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: AhlColors.primaryGradient),
+        ),
+        title: Row(
           children: [
-            Text(l10n.chat),
-            if (circleName != null && circleName.isNotEmpty)
-              Text(
-                circleName,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AhlColors.inkMedium,
-                    ),
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white24),
               ),
+              child: const Center(child: Icon3D('chat-bubble', size: 32)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    circleName?.isNotEmpty == true ? circleName! : l10n.chat,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    members.isEmpty
+                        ? l10n.chatWithCircle
+                        : l10n.membersOnline(members.length, onlineCount),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.74),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: all.isEmpty
-                ? _EmptyChat(l10n: l10n)
-                : NotificationListener<ScrollNotification>(
-                    onNotification: (notification) {
-                      if (notification.metrics.pixels >=
-                          notification.metrics.maxScrollExtent - 140) {
-                        ref.read(chatControllerProvider.notifier).loadOlder();
-                      }
-                      return false;
-                    },
-                    child: ListView.builder(
-                      controller: _scroll,
-                      reverse: true,
-                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                      itemCount: all.length + (chat.hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= all.length) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: Center(
-                              child: chat.loadingOlder
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2),
-                                    )
-                                  : const SizedBox(height: 8),
-                            ),
-                          );
-                        }
-                        final message = all[all.length - 1 - index];
-                        final previous = index < all.length - 1
-                            ? all[all.length - 2 - index]
-                            : null;
-                        final showDate = previous == null ||
-                            !_sameDay(previous.createdAt, message.createdAt);
-                        final isMe = message.senderUid == uid;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (showDate)
-                              ChatDateChip(
-                                date: message.createdAt,
-                                locale: localeName,
-                              ),
-                            ChatBubble(
-                              message: message,
-                              isMe: isMe,
-                              locale: localeName,
-                              sender: membersByUid[message.senderUid],
-                              progress: chat.progress[message.id],
-                              onRetry: () {
-                                ref
-                                    .read(chatControllerProvider.notifier)
-                                    .retry(message);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-          ),
-          _quickChips(l10n),
-          if (_recording) _recordingBar(l10n),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+        actions: [
+          if (headerAvatars.isNotEmpty)
+            SizedBox(
+              width: 26.0 + (headerAvatars.length - 1) * 18 + 12,
+              height: 36,
+              child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  IconButton(
-                    onPressed: _recording
-                        ? null
-                        : () => _openAttachments(l10n),
-                    icon: const Icon(Icons.add_circle_outline_rounded,
-                        color: AhlColors.primary),
-                    tooltip: l10n.attach,
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _input,
-                      minLines: 1,
-                      maxLines: 4,
-                      enabled: !_recording,
-                      textInputAction: TextInputAction.send,
-                      onChanged: (_) => setState(() {}),
-                      onSubmitted: (_) => _sendText(l10n),
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      decoration: InputDecoration(
-                        hintText: l10n.typeMessage,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  if (_input.text.trim().isNotEmpty && !_recording)
-                    GestureDetector(
-                      onTap: () => _sendText(l10n),
+                  for (var i = 0; i < headerAvatars.length; i++)
+                    PositionedDirectional(
+                      start: i * 18.0,
+                      top: 4,
                       child: Container(
-                        width: 46,
-                        height: 46,
+                        padding: const EdgeInsets.all(1.5),
                         decoration: const BoxDecoration(
-                          gradient: AhlColors.primaryGradient,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.send_rounded,
-                            color: Colors.white, size: 21),
-                      ),
-                    )
-                  else
-                    GestureDetector(
-                      onLongPressStart: (details) {
-                        if (!_recording && _input.text.trim().isEmpty) {
-                          _startRecording(
-                            locked: false,
-                            startDx: details.globalPosition.dx,
-                          );
-                        }
-                      },
-                      onLongPressMoveUpdate: (details) {
-                        if (!_recording || _locked) return;
-                        final dx = details.globalPosition.dx - _startDx;
-                        final rtl =
-                            Directionality.of(context) == TextDirection.rtl;
-                        final cancel = rtl ? dx > 70 : dx < -70;
-                        if (cancel != _cancelHint) {
-                          setState(() => _cancelHint = cancel);
-                        }
-                      },
-                      onLongPressEnd: (_) {
-                        if (!_recording) return;
-                        if (_cancelHint) {
-                          _cancelRecording();
-                        } else if (!_locked) {
-                          _finishRecording(send: true);
-                        }
-                      },
-                      onTap: () {
-                        if (_recording && _locked) {
-                          _finishRecording(send: true);
-                        } else if (!_recording && _input.text.trim().isEmpty) {
-                          _startRecording(locked: true);
-                        }
-                      },
-                      child: Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          color: _recording ? AhlColors.danger : null,
-                          gradient: _recording
-                              ? null
-                              : AhlColors.primaryGradient,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _recording
-                              ? Icons.stop_rounded
-                              : Icons.mic_rounded,
                           color: Colors.white,
-                          size: 22,
+                          shape: BoxShape.circle,
+                        ),
+                        child: AvatarCircle(
+                          name: headerAvatars[i].name,
+                          photoUrl: headerAvatars[i].photoUrl,
+                          size: 25,
                         ),
                       ),
                     ),
                 ],
               ),
             ),
-          ),
+          const SizedBox(width: 12),
         ],
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF8F3FF), Color(0xFFFDFBFF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: loadingChat
+                  ? const ChatSkeleton()
+                  : all.isEmpty && chat.error != null
+                  ? _ChatLoadError(
+                      l10n: l10n,
+                      onRetry: () =>
+                          ref.read(chatControllerProvider.notifier).retryLoad(),
+                    )
+                  : all.isEmpty
+                  ? _EmptyChat(l10n: l10n)
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        if (notification.metrics.pixels >=
+                            notification.metrics.maxScrollExtent - 140) {
+                          ref.read(chatControllerProvider.notifier).loadOlder();
+                        }
+                        return false;
+                      },
+                      child: ListView.builder(
+                        controller: _scroll,
+                        reverse: true,
+                        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                        itemCount: all.length + (chat.hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index >= all.length) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Center(
+                                child: chat.loadingOlder
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const SizedBox(height: 8),
+                              ),
+                            );
+                          }
+                          final message = all[all.length - 1 - index];
+                          final previous = index < all.length - 1
+                              ? all[all.length - 2 - index]
+                              : null;
+                          final showDate =
+                              previous == null ||
+                              !_sameDay(previous.createdAt, message.createdAt);
+                          final isMe = message.senderUid == uid;
+                          final groupedWithPrevious =
+                              !isMe &&
+                              !showDate &&
+                              previous.senderUid == message.senderUid &&
+                              message.createdAt
+                                      .difference(previous.createdAt)
+                                      .inMinutes <
+                                  4;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (showDate)
+                                ChatDateChip(
+                                  date: message.createdAt,
+                                  locale: localeName,
+                                ),
+                              ChatBubble(
+                                message: message,
+                                isMe: isMe,
+                                locale: localeName,
+                                sender: membersByUid[message.senderUid],
+                                progress: chat.progress[message.id],
+                                showAvatar: !isMe && !groupedWithPrevious,
+                                groupedWithPrevious: groupedWithPrevious,
+                                onRetry: () {
+                                  ref
+                                      .read(chatControllerProvider.notifier)
+                                      .retry(message);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+            ),
+            _quickChips(l10n),
+            if (_recording) _recordingBar(l10n),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 10),
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: AhlColors.border),
+                    boxShadow: AhlColors.softShadow,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: _recording ? null : () => _openAttachments(l10n),
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: AhlColors.primary.withValues(alpha: 0.08),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.add_rounded,
+                            color: AhlColors.primary,
+                            size: 23,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: TextField(
+                          controller: _input,
+                          minLines: 1,
+                          maxLines: 4,
+                          enabled: !_recording,
+                          textInputAction: TextInputAction.send,
+                          onChanged: (_) => setState(() {}),
+                          onSubmitted: (_) => _sendText(l10n),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          decoration: InputDecoration(
+                            hintText: l10n.typeMessage,
+                            hintStyle: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: AhlColors.inkLight),
+                            filled: true,
+                            fillColor: AhlColors.background,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 11,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(999),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(999),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(999),
+                              borderSide: BorderSide(
+                                color: AhlColors.primary.withValues(
+                                  alpha: 0.25,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      if (_input.text.trim().isNotEmpty && !_recording)
+                        GestureDetector(
+                          onTap: () => _sendText(l10n),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: const BoxDecoration(
+                              gradient: AhlColors.primaryGradient,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x445B21B6),
+                                  blurRadius: 12,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.send_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      else
+                        GestureDetector(
+                          onLongPressStart: (details) {
+                            if (!_recording && _input.text.trim().isEmpty) {
+                              _startRecording(
+                                locked: false,
+                                startDx: details.globalPosition.dx,
+                              );
+                            }
+                          },
+                          onLongPressMoveUpdate: (details) {
+                            if (!_recording || _locked) return;
+                            final dx = details.globalPosition.dx - _startDx;
+                            final rtl =
+                                Directionality.of(context) == TextDirection.rtl;
+                            final cancel = rtl ? dx > 70 : dx < -70;
+                            if (cancel != _cancelHint) {
+                              setState(() => _cancelHint = cancel);
+                            }
+                          },
+                          onLongPressEnd: (_) {
+                            if (!_recording) {
+                              if (_recordStarting) {
+                                _stopRequested = true;
+                                _cancelRequested = _cancelHint;
+                              }
+                              return;
+                            }
+                            if (_cancelHint) {
+                              _cancelRecording();
+                            } else if (!_locked) {
+                              _finishRecording(send: true);
+                            }
+                          },
+                          onTap: () {
+                            if (_recording && _locked) {
+                              _finishRecording(send: true);
+                            } else if (!_recording &&
+                                _input.text.trim().isEmpty) {
+                              _startRecording(locked: true);
+                            }
+                          },
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              gradient: _recording
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color(0xFFE11D48),
+                                        Color(0xFFF43F5E),
+                                      ],
+                                    )
+                                  : AhlColors.primaryGradient,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      (_recording
+                                              ? AhlColors.danger
+                                              : AhlColors.primary)
+                                          .withValues(alpha: 0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: _recording
+                                ? const Icon(
+                                    Icons.stop_rounded,
+                                    color: Colors.white,
+                                    size: 21,
+                                  )
+                                : const Icon3D('mic', size: 28),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _quickChips(AppLocalizations l10n) {
     final chips = [
-      (label: l10n.quickOnMyWay, icon: Icons.directions_walk_rounded),
-      (label: l10n.quickReached, icon: Icons.check_circle_outline_rounded),
-      (label: l10n.quickCallMe, icon: Icons.call_outlined),
+      (label: l10n.quickOnMyWay, asset: 'map-pin'),
+      (label: l10n.quickReached, asset: 'star'),
+      (label: l10n.quickCallMe, asset: 'call-only'),
     ];
     return SizedBox(
-      height: 40,
+      height: 46,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         reverse: false,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
         itemCount: chips.length,
         separatorBuilder: (context, index) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
@@ -547,24 +753,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               _scrollToBottom();
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsetsDirectional.fromSTEB(5, 4, 12, 4),
               decoration: BoxDecoration(
-                color: AhlColors.primary.withValues(alpha: 0.08),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
-                  color: AhlColors.primary.withValues(alpha: 0.2),
+                  color: AhlColors.primary.withValues(alpha: 0.12),
                 ),
+                boxShadow: AhlColors.softShadowSmall,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(chip.icon, size: 15, color: AhlColors.primary),
+                  Icon3D(chip.asset, size: 24),
                   const SizedBox(width: 6),
                   Text(
                     chip.label,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: AhlColors.primary,
-                        ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AhlColors.ink,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -593,9 +801,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           const SizedBox(width: 8),
           Text(
             _formatDuration(_elapsed),
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
+            style: Theme.of(context).textTheme.labelLarge
                 ?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(width: 10),
@@ -607,13 +813,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   for (var i = 0; i < 24; i++)
                     Expanded(
                       child: Container(
-                        height: (4 +
-                                (_amplitudes.isEmpty
-                                    ? 1
-                                    : _amplitudes[
-                                            i % _amplitudes.length] *
-                                        16))
-                            .toDouble(),
+                        height:
+                            (4 +
+                                    (_amplitudes.isEmpty
+                                        ? 1
+                                        : _amplitudes[i % _amplitudes.length] *
+                                              16))
+                                .toDouble(),
                         margin: const EdgeInsets.symmetric(horizontal: 1),
                         decoration: BoxDecoration(
                           color: _cancelHint
@@ -631,16 +837,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Text(
             hint,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: _cancelHint ? AhlColors.danger : AhlColors.inkMedium,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: _cancelHint ? AhlColors.danger : AhlColors.inkMedium,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           if (_locked) ...[
             const SizedBox(width: 8),
             GestureDetector(
               onTap: _cancelRecording,
-              child: const Icon(Icons.close_rounded,
-                  size: 18, color: AhlColors.danger),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 18,
+                color: AhlColors.danger,
+              ),
             ),
           ],
         ],
@@ -650,16 +859,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   String _formatDuration(Duration duration) {
     final minutes = duration.inMinutes;
-    final seconds =
-        duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
   }
 }
 
-class _EmptyChat extends StatelessWidget {
-  const _EmptyChat({required this.l10n});
+class _ChatLoadError extends StatelessWidget {
+  const _ChatLoadError({required this.l10n, required this.onRetry});
 
   final AppLocalizations l10n;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -675,21 +884,64 @@ class _EmptyChat extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.chat_bubble_outline_rounded,
+              Icons.cloud_off_rounded,
               color: AhlColors.primary,
               size: 32,
             ),
           ),
           const SizedBox(height: 14),
           Text(
-            l10n.chatEmpty,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
+            l10n.error,
+            style: Theme.of(context).textTheme.bodyLarge
                 ?.copyWith(color: AhlColors.inkMedium),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          TextButton(onPressed: onRetry, child: Text(l10n.retry)),
         ],
+      ),
+    );
+  }
+}
+
+class _EmptyChat extends StatelessWidget {
+  const _EmptyChat({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon3D('chat-bubble', size: 104)
+                .animate(
+                  onPlay: (controller) => controller.repeat(reverse: true),
+                )
+                .scale(
+                  begin: const Offset(1, 1),
+                  end: const Offset(1.04, 1.04),
+                  duration: 1800.ms,
+                  curve: Curves.easeInOut,
+                ),
+            const SizedBox(height: 20),
+            Text(
+              l10n.chatWithCircle,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w800, color: AhlColors.ink),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.startConversation,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: AhlColors.inkMedium, height: 1.4),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -730,4 +982,3 @@ class _PulsingDotState extends State<_PulsingDot>
     );
   }
 }
-

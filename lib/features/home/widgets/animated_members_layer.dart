@@ -14,12 +14,18 @@ class AnimatedMembersLayer extends StatefulWidget {
     required this.selfUid,
     required this.selectedUid,
     required this.onSelect,
+    this.selectedDistanceText,
+    this.selectedEtaText,
+    this.selectedIsEstimate = false,
   });
 
   final List<CircleMember> located;
   final String selfUid;
   final String? selectedUid;
   final ValueChanged<CircleMember> onSelect;
+  final String? selectedDistanceText;
+  final String? selectedEtaText;
+  final bool selectedIsEstimate;
 
   @override
   State<AnimatedMembersLayer> createState() => _AnimatedMembersLayerState();
@@ -85,9 +91,19 @@ class _AnimatedMembersLayerState extends State<AnimatedMembersLayer>
       builder: (context, _) {
         final usedPoints = <String, int>{};
         final markers = <Marker>[];
-        for (final member in widget.located) {
-          var point = _currentPosition(member.uid) ??
-              LatLng(member.lat!, member.lng!);
+        final ordered = [...widget.located]
+          ..sort((a, b) {
+            final aSelf = a.uid == widget.selfUid ? 1 : 0;
+            final bSelf = b.uid == widget.selfUid ? 1 : 0;
+            if (aSelf != bSelf) return aSelf.compareTo(bSelf);
+            final aSelected = a.uid == widget.selectedUid ? 1 : 0;
+            final bSelected = b.uid == widget.selectedUid ? 1 : 0;
+            if (aSelected != bSelected) return aSelected.compareTo(bSelected);
+            return a.uid.compareTo(b.uid);
+          });
+        for (final member in ordered) {
+          var point =
+              _currentPosition(member.uid) ?? LatLng(member.lat!, member.lng!);
           final key =
               '${point.latitude.toStringAsFixed(4)},${point.longitude.toStringAsFixed(4)}';
           final duplicateIndex = usedPoints[key] ?? 0;
@@ -96,17 +112,21 @@ class _AnimatedMembersLayerState extends State<AnimatedMembersLayer>
             final shift = 0.00018 * duplicateIndex;
             point = LatLng(point.latitude + shift, point.longitude + shift);
           }
+          final selected = member.uid == widget.selectedUid;
           markers.add(
             Marker(
               point: point,
-              width: 260,
-              height: 190,
+              width: MemberMarker.width,
+              height: MemberMarker.height,
               alignment: Alignment.topCenter,
               child: RepaintBoundary(
                 child: MemberMarker(
                   member: member,
                   isSelf: member.uid == widget.selfUid,
-                  selected: member.uid == widget.selectedUid,
+                  selected: selected,
+                  distanceText: selected ? widget.selectedDistanceText : null,
+                  etaText: selected ? widget.selectedEtaText : null,
+                  isEstimate: selected ? widget.selectedIsEstimate : false,
                   onTap: () => widget.onSelect(member),
                 ),
               ),

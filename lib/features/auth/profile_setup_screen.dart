@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/config.dart';
+import '../../core/services/media_service.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_button.dart';
@@ -20,14 +24,18 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final TextEditingController _nameController = TextEditingController();
   String? _gender;
   DateTime? _birthDate;
+  String? _photoUrl;
+  bool _uploading = false;
 
   @override
   void initState() {
     super.initState();
-    final name = ref.read(sessionProvider).user?.name;
+    final user = ref.read(sessionProvider).user;
+    final name = user?.name;
     if (name != null && name.isNotEmpty) {
       _nameController.text = name;
     }
+    _photoUrl = user?.photoUrl;
   }
 
   @override
@@ -39,12 +47,43 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   Future<void> _save(AppLocalizations l10n) async {
     final name = _nameController.text.trim();
     if (name.isEmpty && !AppConfig.useMockData) return;
-    await ref.read(sessionProvider.notifier).updateProfile(
+    await ref
+        .read(sessionProvider.notifier)
+        .updateProfile(
           name: name.isEmpty ? 'Demo User' : name,
           gender: _gender,
           birthDate: _birthDate,
+          photoUrl: _photoUrl,
         );
-    if (mounted) context.push('/circle');
+    if (mounted) context.go('/circle');
+  }
+
+  Future<void> _pickPhoto(AppLocalizations l10n) async {
+    if (_uploading) return;
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 90,
+    );
+    if (picked == null) return;
+    setState(() => _uploading = true);
+    try {
+      final url = await const MediaService().uploadProfilePhoto(
+        File(picked.path),
+      );
+      if (!mounted) return;
+      setState(() => _photoUrl = url);
+    } catch (error) {
+      if (!mounted) return;
+      final message = error is MediaUploadException
+          ? error.message
+          : l10n.error;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
   }
 
   @override
@@ -62,12 +101,39 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               Center(
                 child: Column(
                   children: [
-                    AvatarCircle(name: _nameController.text.isEmpty ? '?' : _nameController.text, size: 96),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AvatarCircle(
+                          name: _nameController.text.isEmpty
+                              ? '?'
+                              : _nameController.text,
+                          photoUrl: _photoUrl,
+                          size: 96,
+                        ),
+                        if (_uploading)
+                          Container(
+                            width: 96,
+                            height: 96,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.35),
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.4,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                     const SizedBox(height: 8),
                     TextButton.icon(
-                      onPressed: () {
-                        // TODO(asset): photo picker
-                      },
+                      onPressed: _uploading ? null : () => _pickPhoto(l10n),
                       icon: const Icon(Icons.camera_alt_outlined, size: 18),
                       label: Text(l10n.photos),
                     ),
@@ -88,15 +154,20 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 child: InputDecorator(
                   decoration: InputDecoration(
                     hintText: l10n.birthDateHint,
-                    suffixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
+                    suffixIcon: const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 20,
+                    ),
                   ),
                   child: Text(
                     _birthDate == null
                         ? l10n.birthDateHint
                         : _birthDate!.toLocal().toString().split(' ').first,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: _birthDate == null ? AhlColors.inkLight : AhlColors.ink,
-                        ),
+                      color: _birthDate == null
+                          ? AhlColors.inkLight
+                          : AhlColors.ink,
+                    ),
                   ),
                 ),
               ),
@@ -127,20 +198,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   child: TextButton(
                     onPressed: () async {
                       final name = _nameController.text.trim();
-                      await ref.read(sessionProvider.notifier).updateProfile(
+                      await ref
+                          .read(sessionProvider.notifier)
+                          .updateProfile(
                             name: name.isEmpty ? 'Demo User' : name,
                             gender: _gender,
                             birthDate: _birthDate,
                           );
                       if (!context.mounted) return;
-                      context.push('/circle');
+                      context.go('/circle');
                     },
                     child: Text(
                       l10n.skipDemo,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AhlColors.inkMedium,
-                            decoration: TextDecoration.underline,
-                          ),
+                        color: AhlColors.inkMedium,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 ),
@@ -190,9 +263,8 @@ class _GenderChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: selected ? Colors.white : AhlColors.ink,
-              ),
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(color: selected ? Colors.white : AhlColors.ink),
         ),
       ),
     );

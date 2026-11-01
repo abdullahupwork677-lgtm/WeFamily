@@ -71,9 +71,7 @@ class _LocationPermissionSheetState
 
   Future<void> _openSettings() async {
     await ref.read(trackingControllerProvider.notifier).openAppSettings();
-    await ref
-        .read(trackingControllerProvider.notifier)
-        .refreshPermission();
+    await ref.read(trackingControllerProvider.notifier).refreshPermission();
     await _startIfPossible();
   }
 
@@ -93,7 +91,9 @@ class _LocationPermissionSheetState
     final circle = ref.read(myCircleProvider).value;
     if (circle == null) return;
     final l10n = AppLocalizations.of(context);
-    await ref.read(trackingControllerProvider.notifier).start(
+    await ref
+        .read(trackingControllerProvider.notifier)
+        .start(
           circleId: circle.id,
           foregroundTitle: l10n.sharingNotificationTitle,
           foregroundText: l10n.sharingNotificationBody,
@@ -135,12 +135,10 @@ class _LocationPermissionSheetState
                 blocked
                     ? l10n.locationDeniedTitle
                     : foreground
-                        ? l10n.allowBackgroundTitle
-                        : l10n.locationPromptTitle,
+                    ? l10n.allowBackgroundTitle
+                    : l10n.locationPromptTitle,
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
+                style: Theme.of(context).textTheme.headlineSmall
                     ?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
@@ -148,27 +146,26 @@ class _LocationPermissionSheetState
                 blocked
                     ? l10n.locationDeniedBody
                     : foreground
-                        ? l10n.allowBackgroundBody
-                        : l10n.locationPromptBody,
+                    ? l10n.allowBackgroundBody
+                    : l10n.locationPromptBody,
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
+                style: Theme.of(context).textTheme.bodyMedium
                     ?.copyWith(color: AhlColors.inkMedium),
               ),
               if (!foreground) ...[
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    const Icon(Icons.visibility_off_outlined,
-                        size: 18, color: AhlColors.primary),
+                    const Icon(
+                      Icons.visibility_off_outlined,
+                      size: 18,
+                      color: AhlColors.primary,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         l10n.locationPromptPrivacy,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
+                        style: Theme.of(context).textTheme.bodySmall
                             ?.copyWith(color: AhlColors.inkMedium),
                       ),
                     ),
@@ -224,24 +221,22 @@ class _LocationPermissionSheetState
                       children: [
                         Text(
                           l10n.backgroundTipsTitle,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
+                          style: Theme.of(context).textTheme.titleSmall
                               ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           l10n.backgroundTipsBody,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
+                          style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: AhlColors.inkMedium),
                         ),
                         const SizedBox(height: 10),
                         TextButton.icon(
                           onPressed: _busy ? null : _disableOptimization,
-                          icon: const Icon(Icons.battery_saver_rounded,
-                              size: 18),
+                          icon: const Icon(
+                            Icons.battery_saver_rounded,
+                            size: 18,
+                          ),
                           label: Text(l10n.disableOptimization),
                         ),
                       ],
@@ -251,14 +246,15 @@ class _LocationPermissionSheetState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.check_circle_rounded,
-                          color: AhlColors.success, size: 20),
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: AhlColors.success,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         l10n.sharingActive,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
+                        style: Theme.of(context).textTheme.bodyMedium
                             ?.copyWith(color: AhlColors.success),
                       ),
                     ],

@@ -78,7 +78,7 @@ class TileCacheService {
 /// Tile provider that uses [TileCacheService] when available.
 class CachedTileProvider extends TileProvider {
   CachedTileProvider({TileCacheService? cache})
-      : _cache = cache ?? TileCacheService.instance;
+    : _cache = cache ?? TileCacheService.instance;
 
   final TileCacheService? _cache;
 
@@ -103,7 +103,9 @@ class _DiskCachedImage extends ImageProvider<_DiskCachedImage> {
 
   @override
   ImageStreamCompleter loadImage(
-      _DiskCachedImage key, ImageDecoderCallback decode) {
+    _DiskCachedImage key,
+    ImageDecoderCallback decode,
+  ) {
     return MultiFrameImageStreamCompleter(
       codec: _load(key, decode),
       scale: 1,
@@ -112,7 +114,9 @@ class _DiskCachedImage extends ImageProvider<_DiskCachedImage> {
   }
 
   Future<ui.Codec> _load(
-      _DiskCachedImage key, ImageDecoderCallback decode) async {
+    _DiskCachedImage key,
+    ImageDecoderCallback decode,
+  ) async {
     Uint8List? bytes;
     try {
       if (await file.exists()) {
@@ -141,14 +145,15 @@ class _DiskCachedImage extends ImageProvider<_DiskCachedImage> {
   Future<Uint8List?> _download() async {
     HttpClient? client;
     try {
-      client = HttpClient()
-        ..connectionTimeout = const Duration(seconds: 10);
+      client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
       final request = await client.getUrl(Uri.parse(url));
-      request.headers.set(HttpHeaders.userAgentHeader,
-          'WeFamily/1.0 (com.wefamily.wefamily)');
+      request.headers.set(
+        HttpHeaders.userAgentHeader,
+        'WeFamily/1.0 (com.wefamily.wefamily)',
+      );
       final response = await request.close().timeout(
-            const Duration(seconds: 20),
-          );
+        const Duration(seconds: 20),
+      );
       if (response.statusCode != 200) return null;
       final builder = BytesBuilder(copy: false);
       await for (final chunk in response) {

@@ -36,18 +36,21 @@ class ChatDateChip extends StatelessWidget {
     }
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 12),
+        margin: const EdgeInsets.symmetric(vertical: 14),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: AhlColors.chip,
+          color: Colors.white.withValues(alpha: 0.88),
           borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: AhlColors.border),
+          boxShadow: AhlColors.softShadowSmall,
         ),
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AhlColors.inkMedium,
-                fontWeight: FontWeight.w600,
-              ),
+            color: AhlColors.inkMedium,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
+          ),
         ),
       ),
     );
@@ -63,6 +66,8 @@ class ChatBubble extends StatelessWidget {
     this.sender,
     this.progress,
     this.onRetry,
+    this.showAvatar = true,
+    this.groupedWithPrevious = false,
   });
 
   final ChatMessage message;
@@ -71,49 +76,64 @@ class ChatBubble extends StatelessWidget {
   final CircleMember? sender;
   final double? progress;
   final VoidCallback? onRetry;
+  final bool showAvatar;
+  final bool groupedWithPrevious;
 
   @override
   Widget build(BuildContext context) {
     final time = DateFormat.jm(locale).format(message.createdAt.toLocal());
     final failed = message.status == 'failed';
+    final bool media = message.type == 'image' || message.type == 'location';
 
     final bubble = Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.76,
       ),
       decoration: BoxDecoration(
-        color: isMe ? AhlColors.primary : AhlColors.surface,
+        gradient: isMe ? AhlColors.primaryGradient : null,
+        color: isMe ? null : AhlColors.surface,
         borderRadius: BorderRadiusDirectional.only(
-          topStart: const Radius.circular(18),
-          topEnd: const Radius.circular(18),
-          bottomStart: Radius.circular(isMe ? 18 : 4),
-          bottomEnd: Radius.circular(isMe ? 4 : 18),
+          topStart: const Radius.circular(22),
+          topEnd: const Radius.circular(22),
+          bottomStart: Radius.circular(
+            isMe ? 22 : (groupedWithPrevious ? 8 : 6),
+          ),
+          bottomEnd: Radius.circular(isMe ? (groupedWithPrevious ? 8 : 6) : 22),
         ),
-        boxShadow: isMe ? null : AhlColors.softShadowSmall,
+        border: isMe ? null : Border.all(color: AhlColors.border),
+        boxShadow: isMe
+            ? const [
+                BoxShadow(
+                  color: Color(0x335B21B6),
+                  blurRadius: 16,
+                  offset: Offset(0, 6),
+                ),
+              ]
+            : AhlColors.softShadowSmall,
       ),
-      clipBehavior:
-          message.type == 'image' ? Clip.antiAlias : Clip.none,
+      clipBehavior: message.type == 'image' ? Clip.antiAlias : Clip.none,
       child: Padding(
-        padding: message.type == 'image' || message.type == 'location'
+        padding: media
             ? const EdgeInsets.all(6)
-            : const EdgeInsets.fromLTRB(14, 10, 14, 8),
+            : const EdgeInsets.fromLTRB(14, 9, 14, 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!isMe && message.type != 'image')
+            if (!isMe && !groupedWithPrevious && message.type != 'image')
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   message.senderName,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AhlColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: AhlColors.primary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.1,
+                  ),
                 ),
               ),
             _body(context),
-            if (message.type != 'image' && message.type != 'location')
+            if (!media)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Row(
@@ -122,14 +142,11 @@ class ChatBubble extends StatelessWidget {
                     Text(
                       time,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color:
-                                isMe ? Colors.white70 : AhlColors.inkLight,
-                          ),
+                        fontSize: 10,
+                        color: isMe ? Colors.white70 : AhlColors.inkLight,
+                      ),
                     ),
-                    if (isMe) ...[
-                      const SizedBox(width: 4),
-                      _statusIcon(),
-                    ],
+                    if (isMe) ...[const SizedBox(width: 4), _statusIcon()],
                   ],
                 ),
               ),
@@ -139,20 +156,24 @@ class ChatBubble extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(top: groupedWithPrevious ? 0 : 3, bottom: 4),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!isMe) ...[
-            AvatarCircle(
-              name: message.senderName,
-              photoUrl: sender?.photoUrl,
-              size: 30,
-            ),
-            const SizedBox(width: 8),
-          ],
+          if (!isMe)
+            showAvatar
+                ? Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: AvatarCircle(
+                      name: message.senderName,
+                      photoUrl: sender?.photoUrl,
+                      size: 31,
+                    ),
+                  )
+                : const SizedBox(width: 39),
           Flexible(
             child: Column(
               crossAxisAlignment: isMe
@@ -173,8 +194,11 @@ class ChatBubble extends StatelessWidget {
                         ),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      icon: const Icon(Icons.refresh_rounded,
-                          size: 14, color: AhlColors.danger),
+                      icon: const Icon(
+                        Icons.refresh_rounded,
+                        size: 14,
+                        color: AhlColors.danger,
+                      ),
                       label: Text(
                         AppLocalizations.of(context).retry,
                         style: const TextStyle(
@@ -186,12 +210,13 @@ class ChatBubble extends StatelessWidget {
                   ),
                 if (message.type == 'image' || message.type == 'location')
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 3),
                     child: Text(
                       time,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: AhlColors.inkLight,
-                          ),
+                        fontSize: 10,
+                        color: isMe ? Colors.white70 : AhlColors.inkLight,
+                      ),
                     ),
                   ),
               ],
@@ -214,8 +239,11 @@ class ChatBubble extends StatelessWidget {
       );
     }
     if (message.status == 'failed') {
-      return const Icon(Icons.error_outline_rounded,
-          size: 12, color: Colors.white);
+      return const Icon(
+        Icons.error_outline_rounded,
+        size: 12,
+        color: Colors.white,
+      );
     }
     return const Icon(Icons.done_all_rounded, size: 13, color: Colors.white70);
   }
@@ -232,9 +260,9 @@ class ChatBubble extends StatelessWidget {
         return Text(
           message.text ?? '',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: isMe ? Colors.white : AhlColors.ink,
-                height: 1.3,
-              ),
+            color: isMe ? Colors.white : AhlColors.ink,
+            height: 1.3,
+          ),
         );
     }
   }
@@ -242,7 +270,8 @@ class ChatBubble extends StatelessWidget {
   Widget _imageBody(BuildContext context) {
     final local = message.localPath;
     final url = message.mediaUrl;
-    final ratio = (message.width != null &&
+    final ratio =
+        (message.width != null &&
             message.height != null &&
             message.width! > 0 &&
             message.height! > 0)
@@ -386,16 +415,19 @@ class ChatBubble extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              const Icon(Icons.near_me_rounded,
-                  size: 16, color: AhlColors.primary),
+              const Icon(
+                Icons.near_me_rounded,
+                size: 16,
+                color: AhlColors.primary,
+              ),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   AppLocalizations.of(context).location,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: isMe ? Colors.white : AhlColors.ink,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: isMe ? Colors.white : AhlColors.ink,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const Spacer(),
@@ -406,8 +438,10 @@ class ChatBubble extends StatelessWidget {
                 ),
                 style: TextButton.styleFrom(
                   minimumSize: Size.zero,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
@@ -500,8 +534,8 @@ class _VoiceBody extends ConsumerWidget {
                         isActive ? position : duration ?? Duration.zero,
                       ),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: isMe ? Colors.white70 : AhlColors.inkLight,
-                          ),
+                        color: isMe ? Colors.white70 : AhlColors.inkLight,
+                      ),
                     ),
                     const Spacer(),
                     GestureDetector(
@@ -518,9 +552,7 @@ class _VoiceBody extends ConsumerWidget {
                         ),
                         child: Text(
                           '${playback.speed == playback.speed.roundToDouble() ? playback.speed.toInt() : playback.speed}x',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall
+                          style: Theme.of(context).textTheme.labelSmall
                               ?.copyWith(
                                 color: color,
                                 fontWeight: FontWeight.w700,
@@ -564,12 +596,12 @@ Future<void> showChatImageViewer(BuildContext context, String url) {
                     fit: BoxFit.contain,
                     loadingBuilder: (context, child, progress) =>
                         progress == null
-                            ? child
-                            : const Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                              ),
+                        ? child
+                        : const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
                     errorBuilder: (context, error, stack) => const Center(
                       child: Icon(
                         Icons.broken_image_outlined,

@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -20,10 +20,7 @@ class ChatRepository {
   CollectionReference<Map<String, dynamic>> _messages(String circleId) =>
       _db.collection('circles').doc(circleId).collection('messages');
 
-  Stream<List<ChatMessage>> watchMessages(
-    String circleId, {
-    int limit = 30,
-  }) {
+  Stream<List<ChatMessage>> watchMessages(String circleId, {int limit = 30}) {
     return _messages(circleId)
         .orderBy('createdAt', descending: true)
         .limit(limit)
@@ -246,4 +243,3 @@ class _ProgressMultipartRequest extends http.MultipartRequest {
 final chatRepositoryProvider = Provider<ChatRepository>(
   (ref) => ChatRepository(FirebaseFirestore.instance),
 );
-

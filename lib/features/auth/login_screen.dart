@@ -8,10 +8,13 @@ import '../../core/constants/config.dart';
 import '../../core/theme/colors.dart';
 import '../../core/utils/session_provider.dart';
 import '../../core/widgets/ahl_button.dart';
+import '../../core/widgets/icon_3d.dart';
 import '../../core/widgets/language_switcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.initialSignup = false});
+
+  final bool initialSignup;
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -21,7 +24,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscure = true;
-  bool _isSignup = false;
+  late bool _isSignup = widget.initialSignup;
   bool _loading = false;
 
   @override
@@ -50,11 +53,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _loading = true);
     try {
       if (_isSignup) {
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
       } else {
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
       }
       await ref.read(sessionProvider.notifier).login(email);
       if (!AppConfig.useMockData) {
@@ -69,7 +76,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       if (!mounted) return;
       final hasCircle = ref.read(sessionProvider).hasCircle;
-      context.go(hasCircle ? '/home' : '/profile-setup');
+      if (_isSignup) {
+        context.go('/profile-setup');
+      } else {
+        context.go(hasCircle ? '/home' : '/circle');
+      }
     } on FirebaseAuthException catch (e) {
       _showMessage(e.message ?? l10n.authFailed);
     } catch (_) {
@@ -103,12 +114,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(width: 80),
                 ],
               ),
-              const SizedBox(height: 40),
-              Text(l10n.loginTitle, style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 32),
+              const Icon3D('map-pin', size: 72),
+              const SizedBox(height: 18),
+              Text(
+                _isSignup ? l10n.createAccount : l10n.loginTitle,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 8),
               Text(
                 l10n.loginSubtitle,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AhlColors.inkMedium),
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(color: AhlColors.inkMedium),
               ),
               const SizedBox(height: 32),
               TextField(
@@ -119,7 +136,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: Theme.of(context).textTheme.bodyLarge,
                 decoration: InputDecoration(
                   hintText: l10n.emailHint,
-                  prefixIcon: const Icon(Icons.mail_outline_rounded, size: 20),
+                  prefixIcon: const SizedBox(
+                    width: 48,
+                    child: Center(child: Icon3D('mail', size: 25)),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -131,10 +151,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: Theme.of(context).textTheme.bodyLarge,
                 decoration: InputDecoration(
                   hintText: l10n.passwordHint,
-                  prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+                  prefixIcon: const SizedBox(
+                    width: 48,
+                    child: Center(child: Icon3D('lock', size: 25)),
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      _obscure
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       size: 20,
                     ),
                     onPressed: () => setState(() => _obscure = !_obscure),
@@ -155,9 +180,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Text(
                     _isSignup ? l10n.switchToLogin : l10n.switchToSignup,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AhlColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: AhlColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -169,9 +194,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Text(
                       l10n.skipDemo,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AhlColors.inkMedium,
-                            decoration: TextDecoration.underline,
-                          ),
+                        color: AhlColors.inkMedium,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 ),

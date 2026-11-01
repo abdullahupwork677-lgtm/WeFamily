@@ -20,8 +20,10 @@ class OtpScreen extends ConsumerStatefulWidget {
 }
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   int _resendSeconds = 30;
   Timer? _timer;
@@ -86,11 +88,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.otpTitle, style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                l10n.otpTitle,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 8),
               Text(
                 l10n.otpSubtitle(widget.phone),
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AhlColors.inkMedium),
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(color: AhlColors.inkMedium),
               ),
               const SizedBox(height: 32),
               Row(
@@ -123,7 +129,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 }),
               ),
               const SizedBox(height: 32),
-              AhlButton(label: l10n.continueBtn, onPressed: () => _verify(l10n)),
+              AhlButton(
+                label: l10n.continueBtn,
+                onPressed: () => _verify(l10n),
+              ),
               const SizedBox(height: 16),
               Center(
                 child: TextButton(
@@ -133,7 +142,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           _startResendTimer();
                         },
                   child: Text(
-                    _resendSeconds > 0 ? l10n.resendIn(_resendSeconds) : l10n.resendCode,
+                    _resendSeconds > 0
+                        ? l10n.resendIn(_resendSeconds)
+                        : l10n.resendCode,
                   ),
                 ),
               ),
@@ -142,16 +153,18 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 Center(
                   child: TextButton(
                     onPressed: () async {
-                      await ref.read(sessionProvider.notifier).login(widget.phone);
+                      await ref
+                          .read(sessionProvider.notifier)
+                          .login(widget.phone);
                       if (!context.mounted) return;
                       context.push('/profile-setup');
                     },
                     child: Text(
                       l10n.skipDemo,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AhlColors.inkMedium,
-                            decoration: TextDecoration.underline,
-                          ),
+                        color: AhlColors.inkMedium,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 ),

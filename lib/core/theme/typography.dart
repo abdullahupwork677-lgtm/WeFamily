@@ -41,11 +41,36 @@ TextTheme ahlTextTheme(Locale locale) {
   }
 
   return TextTheme(
-    displayLarge: style(36, FontWeight.w800, height: 1.22, letterSpacing: -0.03),
-    displayMedium: style(28, FontWeight.w800, height: 1.21, letterSpacing: -0.02),
-    headlineLarge: style(28, FontWeight.w700, height: 1.29, letterSpacing: -0.02),
-    headlineMedium: style(22, FontWeight.w700, height: 1.27, letterSpacing: -0.015),
-    headlineSmall: style(20, FontWeight.w700, height: 1.3, letterSpacing: -0.01),
+    displayLarge: style(
+      36,
+      FontWeight.w800,
+      height: 1.22,
+      letterSpacing: -0.03,
+    ),
+    displayMedium: style(
+      28,
+      FontWeight.w800,
+      height: 1.21,
+      letterSpacing: -0.02,
+    ),
+    headlineLarge: style(
+      28,
+      FontWeight.w700,
+      height: 1.29,
+      letterSpacing: -0.02,
+    ),
+    headlineMedium: style(
+      22,
+      FontWeight.w700,
+      height: 1.27,
+      letterSpacing: -0.015,
+    ),
+    headlineSmall: style(
+      20,
+      FontWeight.w700,
+      height: 1.3,
+      letterSpacing: -0.01,
+    ),
     titleLarge: style(17, FontWeight.w600, height: 1.29, letterSpacing: -0.01),
     titleMedium: style(16, FontWeight.w600, height: 1.35),
     bodyLarge: style(16, FontWeight.w400, height: 1.5),

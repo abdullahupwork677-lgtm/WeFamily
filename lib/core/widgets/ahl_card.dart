@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/colors.dart';
 
 class AhlCard extends StatelessWidget {
@@ -30,9 +31,7 @@ class AhlCard extends StatelessWidget {
 
     return Padding(
       padding: margin,
-      child: onTap != null
-          ? GestureDetector(onTap: onTap, child: card)
-          : card,
+      child: onTap != null ? GestureDetector(onTap: onTap, child: card) : card,
     );
   }
 }

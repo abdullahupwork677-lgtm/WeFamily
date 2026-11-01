@@ -6,7 +6,10 @@ import 'package:wefamily/app/app.dart';
 import 'package:wefamily/core/constants/config.dart';
 
 Future<void> _startAtLogin(WidgetTester tester) async {
-  SharedPreferences.setMockInitialValues({'onboarding_seen': true});
+  SharedPreferences.setMockInitialValues({
+    'onboarding_seen': true,
+    'onboarding_version': 2,
+  });
   await tester.pumpWidget(const ProviderScope(child: WeFamilyApp()));
   await tester.pump(const Duration(seconds: 2));
   await tester.pumpAndSettle();
@@ -22,7 +25,7 @@ void main() {
   testWidgets('skip on login navigates to profile setup', (tester) async {
     await _startAtLogin(tester);
 
-    expect(find.text('Welcome to WeFamily'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
 
     await _skipLogin(tester);
 
@@ -37,7 +40,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome to WeFamily'), findsOneWidget,
+    expect(find.text('Welcome back'), findsOneWidget,
         reason: 'Back from profile setup should return to login');
   });
 
@@ -59,8 +62,8 @@ void main() {
     await tester.tap(find.text('New here? Create account'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Create account'), findsOneWidget,
-        reason: 'Toggling should switch the submit button to signup');
+    expect(find.text('Create account'), findsWidgets,
+        reason: 'Toggling should switch the title and submit button to signup');
   });
 
   testWidgets('fresh install full flow reaches home', (tester) async {
@@ -69,18 +72,18 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
 
-    expect(find.text('Stay close to the ones you love'), findsOneWidget,
+    expect(find.text('Keep your family close'), findsOneWidget,
         reason: 'Fresh install should show onboarding');
 
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Get started'));
+    await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome to WeFamily'), findsOneWidget,
-        reason: 'After onboarding, login should show');
+    expect(find.text('Create account'), findsWidgets,
+        reason: 'After onboarding, signup login should show');
 
     await _skipLogin(tester);
     await tester.tap(find.text('Skip for now (demo)'));

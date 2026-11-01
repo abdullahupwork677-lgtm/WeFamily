@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../theme/colors.dart';
+import 'icon_3d.dart';
 
 /// Primary CTA = purple-to-magenta gradient pill.
 /// Secondary (`gradient: false`) = light grey pill with purple text and a
@@ -12,6 +14,7 @@ class AhlButton extends StatefulWidget {
     this.expand = true,
     this.gradient = true,
     this.icon,
+    this.asset,
   });
 
   final String label;
@@ -19,6 +22,7 @@ class AhlButton extends StatefulWidget {
   final bool expand;
   final bool gradient;
   final IconData? icon;
+  final String? asset;
 
   @override
   State<AhlButton> createState() => _AhlButtonState();
@@ -30,50 +34,40 @@ class _AhlButtonState extends State<AhlButton> {
   @override
   Widget build(BuildContext context) {
     final bool enabled = widget.onPressed != null;
-    final Color foreground =
-        widget.gradient ? Colors.white : AhlColors.primary;
+    final Color foreground = widget.gradient ? Colors.white : AhlColors.primary;
 
     final Widget child = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (widget.icon != null) ...[
+        if (widget.asset != null) ...[
+          Icon3D(widget.asset!, size: 24),
+          const SizedBox(width: 8),
+        ] else if (widget.icon != null) ...[
           Icon(widget.icon, size: 20, color: foreground),
           const SizedBox(width: 8),
         ],
         Text(
           widget.label,
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium
+          style: Theme.of(context).textTheme.titleMedium
               ?.copyWith(color: foreground),
         ),
       ],
     );
 
-    final ButtonStyle style = FilledButton.styleFrom(
-      backgroundColor: Colors.transparent,
-      foregroundColor: foreground,
-      shadowColor: Colors.transparent,
-      disabledBackgroundColor: Colors.transparent,
-      disabledForegroundColor: foreground.withValues(alpha: 0.5),
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
-      shape: const StadiumBorder(),
-    );
-
-    final Widget button = DecoratedBox(
+    final Widget button = Container(
       decoration: BoxDecoration(
         gradient: widget.gradient
             ? (enabled
-                ? AhlColors.primaryGradient
-                : LinearGradient(
-                    colors: [
-                      AhlColors.primary.withValues(alpha: 0.4),
-                      AhlColors.primaryGradientEnd.withValues(alpha: 0.4),
-                    ],
-                    begin: AlignmentDirectional.topStart,
-                    end: AlignmentDirectional.bottomEnd,
-                  ))
+                  ? AhlColors.primaryGradient
+                  : LinearGradient(
+                      colors: [
+                        AhlColors.primary.withValues(alpha: 0.4),
+                        AhlColors.primaryGradientEnd.withValues(alpha: 0.4),
+                      ],
+                      begin: AlignmentDirectional.topStart,
+                      end: AlignmentDirectional.bottomEnd,
+                    ))
             : null,
         color: widget.gradient ? null : AhlColors.chip,
         borderRadius: BorderRadius.circular(999),
@@ -87,15 +81,26 @@ class _AhlButtonState extends State<AhlButton> {
               ]
             : AhlColors.softShadowSmall,
       ),
-      child: FilledButton(
-        onPressed: widget.onPressed,
-        style: style,
-        child: child,
+      child: Material(
+        color: Colors.transparent,
+        shape: const StadiumBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: widget.onPressed,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+            child: Opacity(
+              opacity: enabled ? 1 : 0.5,
+              child: child,
+            ),
+          ),
+        ),
       ),
     );
 
-    final Widget sized =
-        widget.expand ? SizedBox(width: double.infinity, child: button) : button;
+    final Widget sized = widget.expand
+        ? SizedBox(width: double.infinity, child: button)
+        : button;
 
     return Listener(
       onPointerDown: (_) => setState(() => _pressed = true),

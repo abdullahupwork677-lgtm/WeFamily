@@ -8,7 +8,9 @@ service cloud.firestore {
       return /databases/$(database)/documents/circles/$(circleId);
     }
     function isMember(circleId) {
-      return signedIn() && request.auth.uid in circleDoc(circleId).data.memberUids;
+      return signedIn() && exists(
+        /databases/$(database)/documents/circles/$(circleId)/members/$(request.auth.uid)
+      );
     }
     function isMemberAfter(circleId) {
       return signedIn() && request.auth.uid in
@@ -22,15 +24,29 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read, write: if signedIn() && request.auth.uid == uid;
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if signedIn() && request.auth.uid == uid &&
+        (!('name' in request.resource.data) ||
+          (request.resource.data.name is string &&
+            request.resource.data.name.size() <= 80)) &&
+        (!('photoUrl' in request.resource.data) ||
+          (request.resource.data.photoUrl is string &&
+            request.resource.data.photoUrl.size() <= 500));
     }
 
     match /inviteCodes/{code} {
       // Anyone signed in may resolve a code, but listing is disabled.
       allow get: if signedIn();
       allow list: if false;
+      // A code may only be created together with the caller's own circle.
       allow create: if signedIn() &&
-        request.resource.data.ownerUid == request.auth.uid;
+        request.resource.data.keys().hasOnly(['circleId', 'ownerUid', 'createdAt']) &&
+        request.resource.data.ownerUid == request.auth.uid &&
+        request.resource.data.circleId is string &&
+        getAfter(circleDoc(request.resource.data.circleId)).data.ownerUid ==
+          request.auth.uid &&
+        getAfter(circleDoc(request.resource.data.circleId)).data.memberUids ==
+          [request.auth.uid];
       allow update: if false;
       allow delete: if signedIn() &&
         request.auth.uid ==
@@ -78,16 +94,135 @@ service cloud.firestore {
         allow read: if isMember(circleId);
         allow create: if signedIn() && request.auth.uid == uid &&
           (isMember(circleId) || isMemberAfter(circleId));
-        allow update: if isMember(circleId) && request.auth.uid == uid;
+        allow update: if isMember(circleId) && request.auth.uid == uid &&
+          changedKeys().hasOnly([
+            'name', 'photoUrl', 'relation', 'sharingLocation', 'ghostMode',
+            'batteryLevel', 'placeLabel', 'lastLocation', 'isMoving',
+            'sinceAt', 'dateKey', 'mode', 'sosActive', 'sosLat', 'sosLng',
+            'sosAt'
+          ]) &&
+          (!('name' in request.resource.data) ||
+            (request.resource.data.name is string &&
+              request.resource.data.name.size() <= 80)) &&
+          (!('photoUrl' in request.resource.data) ||
+            (request.resource.data.photoUrl is string &&
+              request.resource.data.photoUrl.size() <= 500)) &&
+          (!('mode' in request.resource.data) ||
+            request.resource.data.mode in
+              ['driving', 'home', 'work', 'outside', 'event']) &&
+          (!('sosLat' in request.resource.data) ||
+            (request.resource.data.sosLat is number &&
+              request.resource.data.sosLat >= -90 &&
+              request.resource.data.sosLat <= 90)) &&
+          (!('sosLng' in request.resource.data) ||
+            (request.resource.data.sosLng is number &&
+              request.resource.data.sosLng >= -180 &&
+              request.resource.data.sosLng <= 180));
         allow delete: if isMember(circleId) &&
           (request.auth.uid == uid || isOwner(circleId));
+      }
+
+      match /tree/{personId} {
+        allow read: if isMember(circleId);
+        allow create: if isMember(circleId) &&
+          request.resource.data.createdBy == request.auth.uid &&
+            request.resource.data.keys().hasOnly([
+              'name', 'gender', 'linkedUid', 'generation', 'relation',
+              'relatedToId', 'parentIds', 'spouseId', 'birthDate', 'photoUrl',
+              'about', 'createdAt', 'createdBy', 'updatedAt'
+            ]) &&
+          request.resource.data.name is string &&
+          request.resource.data.name.size() > 0 &&
+          request.resource.data.name.size() <= 80 &&
+          request.resource.data.gender in ['male', 'female', 'other'] &&
+          request.resource.data.relation in [
+            'self', 'father', 'mother', 'son', 'daughter', 'brother',
+            'sister', 'husband', 'wife', 'grandfather', 'grandmother',
+            'paternal_uncle', 'maternal_uncle', 'paternal_aunt',
+            'maternal_aunt', 'other'
+          ] &&
+          request.resource.data.generation is int &&
+          request.resource.data.generation >= -20 &&
+          request.resource.data.generation <= 20 &&
+          request.resource.data.parentIds is list &&
+          request.resource.data.parentIds.size() <= 4 &&
+          (!('spouseId' in request.resource.data) ||
+            request.resource.data.spouseId is string) &&
+          (!('linkedUid' in request.resource.data) ||
+            request.resource.data.linkedUid is string) &&
+            (!('photoUrl' in request.resource.data) ||
+              (request.resource.data.photoUrl is string &&
+                request.resource.data.photoUrl.size() <= 500)) &&
+            (!('about' in request.resource.data) ||
+              (request.resource.data.about is string &&
+                request.resource.data.about.size() <= 500));
+          allow update: if isMember(circleId) &&
+            request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly([
+                'name', 'gender', 'linkedUid', 'generation', 'relation',
+                'relatedToId', 'parentIds', 'spouseId', 'birthDate', 'photoUrl',
+                'about', 'updatedAt'
+              ]) &&
+          (!('name' in request.resource.data) ||
+            (request.resource.data.name is string &&
+              request.resource.data.name.size() > 0 &&
+              request.resource.data.name.size() <= 80)) &&
+          (!('gender' in request.resource.data) ||
+            request.resource.data.gender in ['male', 'female', 'other']) &&
+          (!('relation' in request.resource.data) ||
+            request.resource.data.relation in [
+              'self', 'father', 'mother', 'son', 'daughter', 'brother',
+              'sister', 'husband', 'wife', 'grandfather', 'grandmother',
+              'paternal_uncle', 'maternal_uncle', 'paternal_aunt',
+              'maternal_aunt', 'other'
+            ]) &&
+          (!('generation' in request.resource.data) ||
+            (request.resource.data.generation is int &&
+              request.resource.data.generation >= -20 &&
+              request.resource.data.generation <= 20)) &&
+          (!('parentIds' in request.resource.data) ||
+            (request.resource.data.parentIds is list &&
+              request.resource.data.parentIds.size() <= 4)) &&
+          (!('spouseId' in request.resource.data) ||
+            request.resource.data.spouseId is string) &&
+          (!('linkedUid' in request.resource.data) ||
+            request.resource.data.linkedUid is string) &&
+            (!('photoUrl' in request.resource.data) ||
+              (request.resource.data.photoUrl is string &&
+                request.resource.data.photoUrl.size() <= 500)) &&
+            (!('about' in request.resource.data) ||
+              (request.resource.data.about is string &&
+                request.resource.data.about.size() <= 500));
+          allow delete: if isMember(circleId);
       }
 
       match /messages/{messageId} {
         allow read: if isMember(circleId);
         allow create: if isMember(circleId) &&
           request.resource.data.senderUid == request.auth.uid &&
-          request.resource.data.type in ['text', 'image', 'voice', 'location'];
+          request.resource.data.type in ['text', 'image', 'voice', 'location'] &&
+          request.resource.data.createdAt == request.time &&
+          (!('senderName' in request.resource.data) ||
+            (request.resource.data.senderName is string &&
+              request.resource.data.senderName.size() <= 80)) &&
+          (
+            (request.resource.data.type == 'text' &&
+              request.resource.data.text is string &&
+              request.resource.data.text.size() > 0 &&
+              request.resource.data.text.size() <= 4000) ||
+            ((request.resource.data.type == 'image' ||
+                request.resource.data.type == 'voice') &&
+              request.resource.data.mediaUrl is string &&
+              request.resource.data.mediaUrl.matches('^https://.*') &&
+              request.resource.data.mediaUrl.size() <= 500) ||
+            (request.resource.data.type == 'location' &&
+              request.resource.data.lat is number &&
+              request.resource.data.lng is number &&
+              request.resource.data.lat >= -90 &&
+              request.resource.data.lat <= 90 &&
+              request.resource.data.lng >= -180 &&
+              request.resource.data.lng <= 180)
+          );
         allow update, delete: if isMember(circleId) &&
           resource.data.senderUid == request.auth.uid;
       }

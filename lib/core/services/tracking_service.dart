@@ -66,10 +66,15 @@ class TrackingState {
 /// (15 m moved, 30 s while moving, 2 min heartbeat) and keeps the foreground
 /// service awake for background sharing.
 class TrackingController extends Notifier<TrackingState> {
+  static const String _ghostPrefKey = 'ghost_mode';
+  static const String _pausedPrefKey = 'sharing_paused';
+
   final StreamController<Position> _positions =
       StreamController<Position>.broadcast();
   final Battery _battery = Battery();
   final Distance _distance = const Distance();
+  bool? _savedGhost;
+  bool? _savedPaused;
 
   StreamSubscription<Position>? _sub;
   StreamSubscription<BatteryState>? _batterySub;
@@ -106,6 +111,54 @@ class TrackingController extends Notifier<TrackingState> {
       permission == LocationPermission.whileInUse ||
       permission == LocationPermission.always;
 
+  Future<bool> _ghostEnabled() async {
+    final saved = _savedGhost;
+    if (saved != null) return saved;
+    var ghost = false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      ghost = prefs.getBool(_ghostPrefKey) ?? false;
+    } catch (_) {
+      // Default to sharing when storage is unavailable.
+    }
+    _savedGhost = ghost;
+    return ghost;
+  }
+
+  Future<void> _saveGhost(bool ghost) async {
+    _savedGhost = ghost;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_ghostPrefKey, ghost);
+    } catch (_) {
+      // Keep the in-memory value when storage fails.
+    }
+  }
+
+  Future<bool> _sharingPaused() async {
+    final saved = _savedPaused;
+    if (saved != null) return saved;
+    var paused = false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      paused = prefs.getBool(_pausedPrefKey) ?? false;
+    } catch (_) {
+      // Default to sharing when storage is unavailable.
+    }
+    _savedPaused = paused;
+    return paused;
+  }
+
+  Future<void> _savePaused(bool paused) async {
+    _savedPaused = paused;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_pausedPrefKey, paused);
+    } catch (_) {
+      // Keep the in-memory value when storage fails.
+    }
+  }
+
   Future<void> start({
     required String circleId,
     String? foregroundTitle,
@@ -113,16 +166,23 @@ class TrackingController extends Notifier<TrackingState> {
   }) async {
     if (AppConfig.useMockData) return;
     _circleId = circleId;
+    if (await _ghostEnabled()) {
+      _setState(state.copyWith(status: TrackingStatus.paused, ghost: true));
+      return;
+    }
+    if (await _sharingPaused()) {
+      _setState(state.copyWith(status: TrackingStatus.paused));
+      return;
+    }
     if (_sub != null || _starting) return;
     _starting = true;
     try {
       final permission = await Geolocator.checkPermission();
       if (_disposed) return;
       if (!_hasPermission(permission)) {
-        _setState(state.copyWith(
-          status: TrackingStatus.denied,
-          permission: permission,
-        ));
+        _setState(
+          state.copyWith(status: TrackingStatus.denied, permission: permission),
+        );
         return;
       }
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -133,12 +193,13 @@ class TrackingController extends Notifier<TrackingState> {
       }
       if (_sub != null) return;
 
-      _setState(state.copyWith(
-        status: TrackingStatus.active,
-        permission: permission,
-        ghost: false,
-        clearError: true,
-      ));
+      _setState(
+        state.copyWith(
+          status: TrackingStatus.active,
+          permission: permission,
+          clearError: true,
+        ),
+      );
       unawaited(_refreshBattery());
       _startBatteryListener();
       _heartbeat ??= Timer.periodic(
@@ -147,18 +208,28 @@ class TrackingController extends Notifier<TrackingState> {
       );
 
       final cached = await Geolocator.getLastKnownPosition();
-      if (cached != null && _sub == null) _emit(cached);
+      final cachedFresh =
+          cached != null &&
+          DateTime.now().difference(cached.timestamp).inSeconds <= 90;
+      if (cachedFresh && _sub == null) {
+        _onPosition(cached);
+      }
 
-      _sub = Geolocator.getPositionStream(
-        locationSettings: _locationSettings(foregroundTitle, foregroundText),
-      ).listen(
-        _onPosition,
-        onError: (Object error) {
-          _setState(
-              state.copyWith(status: TrackingStatus.error, error: '$error'));
-        },
-        cancelOnError: false,
-      );
+      _sub =
+          Geolocator.getPositionStream(
+            locationSettings: _locationSettings(
+              foregroundTitle,
+              foregroundText,
+            ),
+          ).listen(
+            _onPosition,
+            onError: (Object error) {
+              _setState(
+                state.copyWith(status: TrackingStatus.error, error: '$error'),
+              );
+            },
+            cancelOnError: false,
+          );
     } finally {
       _starting = false;
     }
@@ -166,6 +237,7 @@ class TrackingController extends Notifier<TrackingState> {
 
   Future<void> pause() async {
     await _cancelSubscriptions();
+    await _savePaused(true);
     _setState(state.copyWith(status: TrackingStatus.paused));
     await _writeSharing(sharingLocation: false, ghostMode: state.ghost);
   }
@@ -173,6 +245,8 @@ class TrackingController extends Notifier<TrackingState> {
   Future<void> resume() async {
     final circleId = _circleId;
     if (circleId == null) return;
+    await _savePaused(false);
+    await _saveGhost(false);
     await _writeSharing(sharingLocation: true, ghostMode: false);
     _setState(state.copyWith(ghost: false));
     await start(circleId: circleId);
@@ -182,9 +256,13 @@ class TrackingController extends Notifier<TrackingState> {
     if (ghost) {
       await _cancelSubscriptions();
       _setState(state.copyWith(ghost: true, status: TrackingStatus.paused));
+      await _saveGhost(true);
+      await _savePaused(false);
       await _writeSharing(sharingLocation: true, ghostMode: true);
     } else {
       _setState(state.copyWith(ghost: false));
+      await _saveGhost(false);
+      await _savePaused(false);
       await _writeSharing(sharingLocation: true, ghostMode: false);
       final circleId = _circleId;
       if (circleId != null) await start(circleId: circleId);
@@ -197,6 +275,8 @@ class TrackingController extends Notifier<TrackingState> {
     if (writePaused) {
       await _writeSharing(sharingLocation: false, ghostMode: false);
     }
+    await _saveGhost(false);
+    await _savePaused(false);
     _circleId = null;
     _setState(const TrackingState(status: TrackingStatus.idle));
   }
@@ -253,20 +333,24 @@ class TrackingController extends Notifier<TrackingState> {
   Future<void> refreshPermission() async {
     try {
       final permission = await Geolocator.checkPermission();
-      _setState(state.copyWith(
-        permission: permission,
-        status: _hasPermission(permission) && state.status == TrackingStatus.denied
-            ? TrackingStatus.idle
-            : null,
-      ));
+      _setState(
+        state.copyWith(
+          permission: permission,
+          status:
+              _hasPermission(permission) &&
+                  state.status == TrackingStatus.denied
+              ? TrackingStatus.idle
+              : null,
+        ),
+      );
     } catch (_) {}
   }
 
   LocationSettings _locationSettings(String? title, String? text) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 15,
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 5,
         forceLocationManager: false,
         foregroundNotificationConfig: ForegroundNotificationConfig(
           notificationTitle: title ?? 'WeFamily',
@@ -277,22 +361,21 @@ class TrackingController extends Notifier<TrackingState> {
           ),
           enableWakeLock: true,
           setOngoing: true,
-
         ),
       );
     }
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return AppleSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 15,
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 5,
         allowBackgroundLocationUpdates: true,
         pauseLocationUpdatesAutomatically: false,
         showBackgroundLocationIndicator: true,
       );
     }
     return const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 15,
+      accuracy: LocationAccuracy.best,
+      distanceFilter: 5,
     );
   }
 
@@ -329,14 +412,17 @@ class TrackingController extends Notifier<TrackingState> {
     }
 
     // At least 15 m of movement, but never more than one write per 10 s.
-    final moved = (_lastWriteAtPosition == null ||
+    final moved =
+        (_lastWriteAtPosition == null ||
             _distance(_lastWriteAtPosition!, current) >= 15) &&
         (_lastWriteAt == null ||
             now.difference(_lastWriteAt!) >= const Duration(seconds: 10));
-    final movingInterval = moving &&
+    final movingInterval =
+        moving &&
         (_lastWriteAt == null ||
             now.difference(_lastWriteAt!) >= const Duration(seconds: 30));
-    final heartbeat = _lastWriteAt == null ||
+    final heartbeat =
+        _lastWriteAt == null ||
         now.difference(_lastWriteAt!) >= const Duration(seconds: 120);
 
     if (!force && !moved && !movingInterval && !heartbeat) return;
@@ -353,7 +439,9 @@ class TrackingController extends Notifier<TrackingState> {
     _writing = true;
     try {
       final battery = await _readBattery();
-      await ref.read(circleRepositoryProvider).updateMyLocation(
+      await ref
+          .read(circleRepositoryProvider)
+          .updateMyLocation(
             circleId: circleId,
             uid: uid,
             latitude: position.latitude,
@@ -386,7 +474,9 @@ class TrackingController extends Notifier<TrackingState> {
     final uid = _uid;
     if (circleId == null || uid == null || AppConfig.useMockData) return;
     try {
-      await ref.read(circleRepositoryProvider).updateSharingState(
+      await ref
+          .read(circleRepositoryProvider)
+          .updateSharingState(
             circleId: circleId,
             uid: uid,
             sharingLocation: sharingLocation,
@@ -400,8 +490,8 @@ class TrackingController extends Notifier<TrackingState> {
   Future<void> _resolvePlace(Position position) async {
     if (_geocoding) return;
     final current = LatLng(position.latitude, position.longitude);
-    final needsGeocode = _geocodeAnchor == null ||
-        _distance(_geocodeAnchor!, current) > 200;
+    final needsGeocode =
+        _geocodeAnchor == null || _distance(_geocodeAnchor!, current) > 200;
     if (!needsGeocode) return;
     _geocoding = true;
     _geocodeAnchor = current;
@@ -411,10 +501,11 @@ class TrackingController extends Notifier<TrackingState> {
       ).placemarkFromCoordinates(position.latitude, position.longitude);
       if (marks.isNotEmpty) {
         final place = marks.first;
-        final parts = [place.name, place.subLocality, place.locality]
-            .whereType<String>()
-            .where((part) => part.trim().isNotEmpty)
-            .toList();
+        final parts = [
+          place.name,
+          place.subLocality,
+          place.locality,
+        ].whereType<String>().where((part) => part.trim().isNotEmpty).toList();
         final label = parts.take(2).join(', ');
         if (label.isNotEmpty && label != _placeLabel) {
           _placeLabel = label;
@@ -488,8 +579,6 @@ class TrackingController extends Notifier<TrackingState> {
     if (_disposed) return;
     state = next;
   }
-
-
 }
 
 final trackingControllerProvider =

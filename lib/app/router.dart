@@ -22,7 +22,9 @@ class AppRouter {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => LoginScreen(
+          initialSignup: state.uri.queryParameters['mode'] == 'signup',
+        ),
       ),
       GoRoute(
         path: '/otp',
@@ -37,12 +39,11 @@ class AppRouter {
       ),
       GoRoute(
         path: '/circle',
-        builder: (context, state) => const CircleScreen(),
+        builder: (context, state) => CircleScreen(
+          addMode: state.uri.queryParameters['add'] == '1',
+        ),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const MainShell(),
-      ),
+      GoRoute(path: '/home', builder: (context, state) => const MainShell()),
     ],
   );
 }

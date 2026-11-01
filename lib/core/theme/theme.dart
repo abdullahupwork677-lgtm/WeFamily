@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'colors.dart';
 import 'typography.dart';
 
@@ -29,9 +30,7 @@ ThemeData ahlTheme(Locale locale) {
       color: AhlColors.surface,
       elevation: 0,
       shadowColor: const Color(0x14000000),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       margin: EdgeInsets.zero,
     ),
     filledButtonTheme: FilledButtonThemeData(
@@ -82,7 +81,10 @@ ThemeData ahlTheme(Locale locale) {
       type: BottomNavigationBarType.fixed,
       showUnselectedLabels: true,
     ),
-    dividerTheme: const DividerThemeData(color: Color(0xFFE9E4F5), thickness: 1),
+    dividerTheme: const DividerThemeData(
+      color: Color(0xFFE9E4F5),
+      thickness: 1,
+    ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       backgroundColor: AhlColors.ink,

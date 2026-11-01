@@ -13,25 +13,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appName => 'وي فاميلي';
 
   @override
-  String get onboardingTitle1 => 'ابق قريبًا من من تحب';
+  String get splashTagline => 'عائلتك، بأمان وتواصل';
+
+  @override
+  String get onboardingBadge1 => 'شبكة الحماية الحية';
+
+  @override
+  String get onboardingTitle1 => 'اجعل عائلتك قريبة';
 
   @override
   String get onboardingBody1 =>
-      'شاهد مكان عائلتك، شارك موقعك، وتواصل معهم — كل ذلك في دائرة خاصة واحدة.';
+      'تحديثات فورية، ونطاقات ذكية، وراحة بال في متناول يدك — أينما كان أحباؤك.';
 
   @override
-  String get onboardingTitle2 => 'شجرة عائلتك، حية وتفاعلية';
+  String get onboardingTrust1 => 'دوائر عائلية مشفّرة من الطرف إلى الطرف';
+
+  @override
+  String get onboardingBadge2 => 'شبكة العائلة الخاصة';
+
+  @override
+  String get onboardingTitle2 => 'اعرف مكان الجميع بأمان';
 
   @override
   String get onboardingBody2 =>
-      'أنشئ شجرة عائلة تفاعلية واربط الأقارب عبر الأجيال.';
+      'خصوصية بمستوى البنوك، واكتشاف فوري للحوادث، وتنبيهات نطاقات ذكية تصلك فقط عند الحاجة.';
 
   @override
-  String get onboardingTitle3 => 'السلامة أولًا، دائمًا';
+  String get onboardingTrust2 => 'حماية على مدار الساعة وبدون بيع أي بيانات';
+
+  @override
+  String get onboardingTitle3 => 'ابنوا شجرة عائلتكم معًا';
 
   @override
   String get onboardingBody3 =>
-      'زر استغاثة بلمسة واحدة ومشاركة موقع مباشر يحافظ على سلامة الجميع دون إحساس بالمراقبة.';
+      'احفظوا القصص العائلية، واحتفلوا بالمناسبات، ووثّقوا إرثكم المشترك عبر الأجيال.';
+
+  @override
+  String get onboardingHaveAccount => 'لديك حساب بالفعل؟';
 
   @override
   String get skip => 'تخطي';
@@ -43,10 +61,80 @@ class AppLocalizationsAr extends AppLocalizations {
   String get getStarted => 'ابدأ الآن';
 
   @override
-  String get loginTitle => 'مرحبًا بك في وي فاميلي';
+  String get illMomInTransit => 'أمي • في الطريق';
 
   @override
-  String get loginSubtitle => 'أدخل رقم هاتفك للمتابعة';
+  String get illLeoAtSchool => 'ليو • في المدرسة';
+
+  @override
+  String get illHomeZoneSafe => 'منطقة المنزل آمنة';
+
+  @override
+  String get illLiveGuardian => 'حماية مباشرة';
+
+  @override
+  String get illHomeZone => 'منطقة المنزل';
+
+  @override
+  String get illSafeActive => 'آمنة ونشطة';
+
+  @override
+  String get illSchoolZone => 'منطقة المدرسة';
+
+  @override
+  String get illArrived => 'وصل 8:30 صباحًا';
+
+  @override
+  String get illCrashReady => 'جاهز للحوادث';
+
+  @override
+  String get illBankLevelSafe => 'آمن بمستوى البنوك';
+
+  @override
+  String get illNanaRose => 'الجدة روز';
+
+  @override
+  String get illElenaMom => 'إيلينا (أمي)';
+
+  @override
+  String get illMarcus => 'ماركوس';
+
+  @override
+  String get illMayaAge => 'مايا، 7';
+
+  @override
+  String get illAnniversary => 'الذكرى الخمسون';
+
+  @override
+  String get illTales => '4 حكايات';
+
+  @override
+  String get illLiveMemory => 'أُضيفت ذكرى مباشرة';
+
+  @override
+  String get loginTitle => 'مرحبًا بعودتك';
+
+  @override
+  String get loginSubtitle =>
+      'أدخل بريدك الإلكتروني لتسجيل الدخول أو إنشاء حساب عائلتك.';
+
+  @override
+  String get encryptedCircle => 'دائرة مشفّرة من الطرف إلى الطرف';
+
+  @override
+  String get bankGradePrivacy => 'خصوصية بمستوى البنوك';
+
+  @override
+  String get bankGradePrivacyBody =>
+      'موقع عائلتك المباشر وأرشيف المحادثات والصور مشفّرة حصريًا بين أعضاء الدائرة المدعوين.';
+
+  @override
+  String get familiesConnected => 'أكثر من 240,000 عائلة مترابطة بأمان';
+
+  @override
+  String termsIntro(String appName) {
+    return 'بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية الخاصة بـ $appName. نحن نحمي بيانات عائلتك بتشفير بمستوى البنوك.';
+  }
 
   @override
   String get phoneHint => 'رقم الهاتف';
@@ -114,6 +202,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get joinCircle => 'انضمام';
+
+  @override
+  String get myCircles => 'دوائرك';
+
+  @override
+  String get joinAnotherCircle => 'انضم إلى دائرة أخرى أو أنشئها';
+
+  @override
+  String get circleAddSubtitle =>
+      'يمكنك الانضمام إلى أكثر من دائرة عائلية. أنشئ دائرة جديدة أو انضم باستخدام رمز الدعوة.';
+
+  @override
+  String get activeCircle => 'النشطة';
+
+  @override
+  String switchedCircle(String name) {
+    return 'تم التبديل إلى $name';
+  }
 
   @override
   String get or => 'أو';
@@ -195,6 +301,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get about => 'نبذة';
+
+  @override
+  String get aboutHint => 'كلمات قليلة عن هذا الشخص';
 
   @override
   String get relatives => 'الأقارب';
@@ -299,6 +408,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get relationOther => 'آخر';
 
   @override
+  String get relationSelf => 'أنت';
+
+  @override
+  String get relationChild => 'ابن/ابنة';
+
+  @override
+  String get relationParent => 'أحد الوالدين';
+
+  @override
+  String get relationSibling => 'أخ/أخت';
+
+  @override
+  String get relationNephew => 'ابن الأخ';
+
+  @override
+  String get relationNiece => 'ابنة الأخ';
+
+  @override
+  String get relationGrandson => 'حفيد';
+
+  @override
+  String get relationGranddaughter => 'حفيدة';
+
+  @override
+  String get relationRelative => 'قريب';
+
+  @override
   String get selectRelation => 'اختر صلة القرابة';
 
   @override
@@ -306,6 +442,169 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get inviteToCircleSub => 'أرسل دعوة دائرة مع هذا القريب';
+
+  @override
+  String get treeEmpty => 'شجرة عائلتك في انتظارك';
+
+  @override
+  String get treeEmptyBody => 'أضف أول قريب لبدء بناء الشجرة.';
+
+  @override
+  String get addFirstRelative => 'أضف أول قريب';
+
+  @override
+  String addRelativeOf(String name) {
+    return 'أضف قريبًا لـ $name';
+  }
+
+  @override
+  String get editPerson => 'تعديل الشخص';
+
+  @override
+  String get deletePerson => 'حذف الشخص';
+
+  @override
+  String deletePersonConfirm(String name) {
+    return 'هل تريد إزالة $name من شجرة العائلة؟';
+  }
+
+  @override
+  String get deletePersonBody =>
+      'سيؤدي هذا إلى إزالة قيد الشجرة فقط، وليس عضو الدائرة.';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get birthday => 'تاريخ الميلاد';
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get gender => 'الجنس';
+
+  @override
+  String get genderOther => 'آخر';
+
+  @override
+  String get optional => 'اختياري';
+
+  @override
+  String get photoUrl => 'رابط الصورة';
+
+  @override
+  String get photoUrlHint => 'https://example.com/photo.jpg';
+
+  @override
+  String get noPhotos => 'لا توجد صورة بعد';
+
+  @override
+  String get addPhoto => 'إضافة صورة';
+
+  @override
+  String get changePhoto => 'تغيير الصورة';
+
+  @override
+  String get removePhoto => 'إزالة الصورة';
+
+  @override
+  String get linkedMember => 'في دائرتك';
+
+  @override
+  String get linkMember => 'اربط بعضو في الدائرة';
+
+  @override
+  String get linkMemberHint => 'اختياري';
+
+  @override
+  String get notLinked => 'ليس في دائرتك';
+
+  @override
+  String get noRelativesYet => 'لم تتم إضافة أقارب بعد';
+
+  @override
+  String get parents => 'الوالدان';
+
+  @override
+  String get grandparents => 'الأجداد';
+
+  @override
+  String get children => 'الأبناء';
+
+  @override
+  String get siblings => 'الإخوة';
+
+  @override
+  String get spouse => 'الزوج/الزوجة';
+
+  @override
+  String get otherRelatives => 'أقارب آخرون';
+
+  @override
+  String bornYear(String year) {
+    return 'ولد عام $year';
+  }
+
+  @override
+  String ageYears(String age) {
+    return '$age سنة';
+  }
+
+  @override
+  String personAdded(String name) {
+    return 'تمت إضافة $name إلى شجرة العائلة';
+  }
+
+  @override
+  String get personUpdated => 'تم تحديث شجرة العائلة';
+
+  @override
+  String get personRemoved => 'تمت الإزالة من شجرة العائلة';
+
+  @override
+  String get treeSaveError => 'تعذّر الحفظ. حاول مرة أخرى.';
+
+  @override
+  String get treeDeleteError => 'تعذّر الحذف. حاول مرة أخرى.';
+
+  @override
+  String get relationRequired => 'اختر صلة القرابة';
+
+  @override
+  String get nameRequired => 'أدخل الاسم';
+
+  @override
+  String get memberAlreadyLinked => 'هذا العضو موجود بالفعل في الشجرة';
+
+  @override
+  String get inviteCodeCopied => 'تم نسخ رمز الدعوة';
+
+  @override
+  String get treeHint => 'اضغط على أي شخص لفتح ملفه';
+
+  @override
+  String get treeHeroTitle => 'حكاية عائلتنا';
+
+  @override
+  String get treeHeroBody => 'كل اسم يحمل حكاية. حافظ على إرث عائلتك.';
+
+  @override
+  String get treePeople => 'الأفراد';
+
+  @override
+  String get treeGenerations => 'الأجيال';
+
+  @override
+  String get treeInCircle => 'في الدائرة';
+
+  @override
+  String generationLabel(String n) {
+    return 'الجيل $n';
+  }
+
+  @override
+  String get treeSearchEmpty => 'لم يتم العثور على أي فرد من العائلة';
 
   @override
   String get loading => 'جارٍ التحميل...';
@@ -387,6 +686,55 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get moving => 'يتحرك';
+
+  @override
+  String get walking => 'يمشي';
+
+  @override
+  String get cycling => 'بالدراجة';
+
+  @override
+  String get atRest => 'متوقف';
+
+  @override
+  String get you => 'أنت';
+
+  @override
+  String get activity => 'النشاط';
+
+  @override
+  String get distance => 'المسافة';
+
+  @override
+  String get etaLabel => 'الوصول';
+
+  @override
+  String get noLocationYet => 'لا يوجد موقع بعد';
+
+  @override
+  String kmValue(String value) {
+    return '$value كم';
+  }
+
+  @override
+  String mValue(String value) {
+    return '$value م';
+  }
+
+  @override
+  String minValue(String value) {
+    return '$value دقيقة';
+  }
+
+  @override
+  String hrMinValue(String hours, String minutes) {
+    return '$hours س $minutes د';
+  }
+
+  @override
+  String awayFromYou(String distance) {
+    return 'يبعد عنك $distance';
+  }
 
   @override
   String get locationNotUpdating => 'الموقع لا يتم تحديثه';
@@ -645,4 +993,220 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get yesterday => 'أمس';
+
+  @override
+  String get presenceMode => 'حالتك';
+
+  @override
+  String get setMode => 'حدد حالتك';
+
+  @override
+  String get modeSubtitle => 'تظهر بجانب صورتك على خريطة العائلة.';
+
+  @override
+  String get modeAuto => 'تلقائي';
+
+  @override
+  String get modeDriving => 'قيادة';
+
+  @override
+  String get modeHome => 'في المنزل';
+
+  @override
+  String get modeWork => 'في العمل';
+
+  @override
+  String get modeOutside => 'بالخارج';
+
+  @override
+  String get modeEvent => 'في مناسبة';
+
+  @override
+  String get modeUpdated => 'تم تحديث الحالة';
+
+  @override
+  String get modeCleared => 'تم ضبط الحالة على تلقائي';
+
+  @override
+  String get modeSaveError => 'تعذر تحديث الحالة';
+
+  @override
+  String membersOnline(int members, int online) {
+    return '$members أعضاء · $online متصل';
+  }
+
+  @override
+  String membersCount(int count) {
+    return '$count أعضاء';
+  }
+
+  @override
+  String get mapRealistic => 'واقعية';
+
+  @override
+  String get onlineNow => 'متصل';
+
+  @override
+  String sosAlertTitle(String name) {
+    return '$name بحاجة إلى مساعدة';
+  }
+
+  @override
+  String get sosAlertBody =>
+      'تم الضغط على SOS. موقعه المباشر يظهر باللون الأحمر على الخريطة.';
+
+  @override
+  String get sosActiveTitle => 'تنبيه SOS الخاص بك مفعّل';
+
+  @override
+  String get sosActiveBody => 'تم إشعار دائرتك بموقعك الدقيق.';
+
+  @override
+  String get sosSent => 'تم إرسال SOS إلى دائرتك';
+
+  @override
+  String get sosCancel => 'إلغاء SOS';
+
+  @override
+  String get sosCancelled => 'تم إلغاء SOS';
+
+  @override
+  String get sosUnable => 'تعذر إرسال SOS. تحقق من اتصالك.';
+
+  @override
+  String get sosNoLocation => 'الموقع غير متاح. شغّل GPS وحاول مجددًا.';
+
+  @override
+  String get sosShowOnMap => 'عرض على الخريطة';
+
+  @override
+  String get sosNotified => 'سيتم إشعار دائرتك فورًا';
+
+  @override
+  String sosSentAt(String time) {
+    return 'أُرسل $time';
+  }
+
+  @override
+  String get sosResolveConfirm => 'هل تريد إلغاء تنبيه SOS للجميع؟';
+
+  @override
+  String get sosRecent => 'تنبيهات الطوارئ';
+
+  @override
+  String get noAlerts => 'لا توجد تنبيهات طوارئ الآن';
+
+  @override
+  String get sosWaiting => 'جارٍ تحديد موقعك الدقيق…';
+
+  @override
+  String get view => 'عرض';
+
+  @override
+  String get dismiss => 'إغلاق';
+
+  @override
+  String get chatWithCircle => 'الدردشة مع دائرتك';
+
+  @override
+  String get startConversation => 'ابدأ المحادثة — ستصل إلى عائلتك فورًا.';
+
+  @override
+  String get sayHello => 'قل مرحبًا';
+
+  @override
+  String get familyOrbitTitle => 'مدار العائلة';
+
+  @override
+  String get familyMapTitle => 'خريطة العائلة';
+
+  @override
+  String familyMapMembersHint(int count) {
+    return '$count أعضاء · اضغط على أي دبوس لتغيير نقطة البداية';
+  }
+
+  @override
+  String get familyMapLive => 'مباشر';
+
+  @override
+  String get familyMapLegend => 'أقصر مسار طريق';
+
+  @override
+  String get familyMapFrom => 'المسافات من';
+
+  @override
+  String get familyMapNearest => 'الأقرب';
+
+  @override
+  String get familyMapFarthest => 'الأبعد';
+
+  @override
+  String familyMapMinDrive(int minutes) {
+    return '$minutes دقيقة بالسيارة';
+  }
+
+  @override
+  String get familyMapNow => 'الآن';
+
+  @override
+  String familyMapMinAgo(int minutes) {
+    return 'منذ $minutes دقيقة';
+  }
+
+  @override
+  String familyMapHourAgo(int hours) {
+    return 'منذ $hours ساعة';
+  }
+
+  @override
+  String familyMapDayAgo(int days) {
+    return 'منذ $days يوم';
+  }
+
+  @override
+  String membersRecenter(int count) {
+    return '$count أفراد · اضغط على أي شخص لإعادة التركيز';
+  }
+
+  @override
+  String get backToMe => 'العودة إليك';
+
+  @override
+  String get relationPartner => 'الشريك';
+
+  @override
+  String get relationGrandparent => 'جد/جدة';
+
+  @override
+  String get relationGrandchild => 'حفيد/حفيدة';
+
+  @override
+  String yourRelation(String relation) {
+    return 'خاصتك: $relation';
+  }
+
+  @override
+  String get addParent => '+ والد';
+
+  @override
+  String get addSibling => '+ أخ/أخت';
+
+  @override
+  String get addPartner => '+ شريك';
+
+  @override
+  String get addChild => '+ طفل';
+
+  @override
+  String get memberAdded => 'تمت إضافة فرد';
+
+  @override
+  String get alreadyTwoParents => 'لديه بالفعل والدان';
+
+  @override
+  String get partnerAlready => 'تمت إضافة الشريك مسبقاً';
+
+  @override
+  String get treeSiblingNeedsParent =>
+      'أضف أحد الوالدين أولاً حتى يمكن ربط الأخ أو الأخت';
 }

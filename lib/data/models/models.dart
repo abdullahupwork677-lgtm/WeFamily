@@ -71,6 +71,11 @@ class CircleMember {
     this.speedKmh,
     this.headingDeg,
     this.sinceAt,
+    this.presenceMode,
+    this.sosActive = false,
+    this.sosLat,
+    this.sosLng,
+    this.sosAt,
   });
 
   final String uid;
@@ -92,6 +97,17 @@ class CircleMember {
   /// When the member arrived at the current place (drives "Here for").
   final DateTime? sinceAt;
 
+  /// Optional mode picked by the member (driving/home/work/outside/event).
+  final PresenceMode? presenceMode;
+
+  /// Active emergency alert. Coordinates stay at the moment SOS was pressed.
+  final bool sosActive;
+  final double? sosLat;
+  final double? sosLng;
+  final DateTime? sosAt;
+
+  bool get hasActiveSos => sosActive && sosLat != null && sosLng != null;
+
   CircleMember copyWith({
     bool? sharingLocation,
     bool? ghostMode,
@@ -104,6 +120,13 @@ class CircleMember {
     double? speedKmh,
     double? headingDeg,
     DateTime? sinceAt,
+    PresenceMode? presenceMode,
+    bool clearPresenceMode = false,
+    bool? sosActive,
+    double? sosLat,
+    double? sosLng,
+    DateTime? sosAt,
+    bool clearSos = false,
   }) {
     return CircleMember(
       uid: uid,
@@ -122,7 +145,51 @@ class CircleMember {
       speedKmh: speedKmh ?? this.speedKmh,
       headingDeg: headingDeg ?? this.headingDeg,
       sinceAt: sinceAt ?? this.sinceAt,
+      presenceMode: clearPresenceMode
+          ? null
+          : (presenceMode ?? this.presenceMode),
+      sosActive: sosActive ?? this.sosActive,
+      sosLat: clearSos ? null : (sosLat ?? this.sosLat),
+      sosLng: clearSos ? null : (sosLng ?? this.sosLng),
+      sosAt: clearSos ? null : (sosAt ?? this.sosAt),
     );
+  }
+}
+
+/// What a member is currently doing, derived from their speed.
+enum MemberActivity { driving, walking, cycling, stationary, offline }
+
+/// A mode the member explicitly chooses to show on the family map.
+enum PresenceMode { driving, home, work, outside, event }
+
+PresenceMode? presenceModeFromString(String? value) {
+  if (value == null || value.isEmpty) return null;
+  for (final mode in PresenceMode.values) {
+    if (mode.name == value) return mode;
+  }
+  return null;
+}
+
+extension CircleMemberActivity on CircleMember {
+  /// True when the last location fix is older than 3 minutes.
+  bool get isStale {
+    final updated = lastUpdated;
+    if (updated == null) return false;
+    return DateTime.now().difference(updated).inMinutes > 3;
+  }
+
+  /// True when the member is actively sharing a fresh location.
+  bool get isLive => sharingLocation && !ghostMode && !isStale;
+
+  MemberActivity get activity {
+    if (!sharingLocation || ghostMode || isStale) {
+      return MemberActivity.offline;
+    }
+    final speed = speedKmh ?? 0;
+    if (!isMoving || speed < 1.5) return MemberActivity.stationary;
+    if (speed >= 18) return MemberActivity.driving;
+    if (speed >= 7) return MemberActivity.cycling;
+    return MemberActivity.walking;
   }
 }
 
@@ -164,22 +231,22 @@ class ChatMessage {
   final String? localPath;
 
   ChatMessage copyWith({String? status}) => ChatMessage(
-        id: id,
-        senderUid: senderUid,
-        senderName: senderName,
-        type: type,
-        text: text,
-        mediaUrl: mediaUrl,
-        thumbUrl: thumbUrl,
-        width: width,
-        height: height,
-        durationMs: durationMs,
-        lat: lat,
-        lng: lng,
-        createdAt: createdAt,
-        status: status ?? this.status,
-        localPath: localPath,
-      );
+    id: id,
+    senderUid: senderUid,
+    senderName: senderName,
+    type: type,
+    text: text,
+    mediaUrl: mediaUrl,
+    thumbUrl: thumbUrl,
+    width: width,
+    height: height,
+    durationMs: durationMs,
+    lat: lat,
+    lng: lng,
+    createdAt: createdAt,
+    status: status ?? this.status,
+    localPath: localPath,
+  );
 }
 
 class TreePerson {
@@ -187,19 +254,71 @@ class TreePerson {
     required this.id,
     required this.name,
     this.photoUrl,
+    this.about,
     this.birthDate,
     this.gender = 'other',
     this.linkedUid,
     this.generation = 0,
+    this.relation = 'other',
+    this.relatedToId,
+    this.parentIds = const <String>[],
+    this.spouseId,
+    this.createdAt,
   });
 
   final String id;
   final String name;
   final String? photoUrl;
+  final String? about;
   final DateTime? birthDate;
   final String gender;
   final String? linkedUid;
   final int generation;
+
+  /// Relation label relative to [relatedToId], e.g. `father` or `wife`.
+  final String relation;
+
+  /// Person this node was originally added against.
+  final String? relatedToId;
+
+  /// Graph edges used by the relatives tab and tree layout.
+  final List<String> parentIds;
+  final String? spouseId;
+  final DateTime? createdAt;
+
+  TreePerson copyWith({
+    String? name,
+    String? photoUrl,
+    String? about,
+    DateTime? birthDate,
+    String? gender,
+    String? linkedUid,
+    int? generation,
+    String? relation,
+    String? relatedToId,
+    List<String>? parentIds,
+    String? spouseId,
+    bool clearSpouse = false,
+    bool clearBirthDate = false,
+    bool clearPhoto = false,
+    bool clearAbout = false,
+  }) {
+    return TreePerson(
+      id: id,
+      name: name ?? this.name,
+      photoUrl: clearPhoto ? null : (photoUrl ?? this.photoUrl),
+      about: clearAbout ? null : (about ?? this.about),
+      birthDate: clearBirthDate ? null : (birthDate ?? this.birthDate),
+      gender: gender ?? this.gender,
+      linkedUid: linkedUid ?? this.linkedUid,
+      generation: generation ?? this.generation,
+      relation: relation ?? this.relation,
+      relatedToId: relatedToId ?? this.relatedToId,
+      parentIds: parentIds ?? this.parentIds,
+      spouseId: clearSpouse ? null : (spouseId ?? this.spouseId),
+      createdAt: createdAt,
+    );
+  }
 }
 
 class TreeRelation {

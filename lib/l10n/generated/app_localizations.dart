@@ -104,41 +104,77 @@ abstract class AppLocalizations {
   /// **'WeFamily'**
   String get appName;
 
+  /// No description provided for @splashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your family, safely connected'**
+  String get splashTagline;
+
+  /// No description provided for @onboardingBadge1.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Guardian Mesh'**
+  String get onboardingBadge1;
+
   /// No description provided for @onboardingTitle1.
   ///
   /// In en, this message translates to:
-  /// **'Stay close to the ones you love'**
+  /// **'Keep your family close'**
   String get onboardingTitle1;
 
   /// No description provided for @onboardingBody1.
   ///
   /// In en, this message translates to:
-  /// **'See where your family is, share your location, and check in — all in one private circle.'**
+  /// **'Real-time updates, intelligent geofences, and peace of mind at your fingertips — wherever your loved ones are.'**
   String get onboardingBody1;
+
+  /// No description provided for @onboardingTrust1.
+  ///
+  /// In en, this message translates to:
+  /// **'End-to-end encrypted family circles'**
+  String get onboardingTrust1;
+
+  /// No description provided for @onboardingBadge2.
+  ///
+  /// In en, this message translates to:
+  /// **'Private Family Mesh'**
+  String get onboardingBadge2;
 
   /// No description provided for @onboardingTitle2.
   ///
   /// In en, this message translates to:
-  /// **'Your family tree, alive'**
+  /// **'Know where everyone is, safely'**
   String get onboardingTitle2;
 
   /// No description provided for @onboardingBody2.
   ///
   /// In en, this message translates to:
-  /// **'Build an interactive family tree and connect relatives across generations.'**
+  /// **'Bank-grade privacy, instant crash detection, and smart geofence alerts that notify you only when it matters.'**
   String get onboardingBody2;
+
+  /// No description provided for @onboardingTrust2.
+  ///
+  /// In en, this message translates to:
+  /// **'24/7 Guardian protection & zero data selling'**
+  String get onboardingTrust2;
 
   /// No description provided for @onboardingTitle3.
   ///
   /// In en, this message translates to:
-  /// **'Safety first, always'**
+  /// **'Build your family tree together'**
   String get onboardingTitle3;
 
   /// No description provided for @onboardingBody3.
   ///
   /// In en, this message translates to:
-  /// **'One-tap SOS and live location sharing keep everyone safe without feeling watched.'**
+  /// **'Preserve oral histories, celebrate milestones, and map your shared heritage across every generation.'**
   String get onboardingBody3;
+
+  /// No description provided for @onboardingHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get onboardingHaveAccount;
 
   /// No description provided for @skip.
   ///
@@ -155,20 +191,152 @@ abstract class AppLocalizations {
   /// No description provided for @getStarted.
   ///
   /// In en, this message translates to:
-  /// **'Get started'**
+  /// **'Get Started'**
   String get getStarted;
+
+  /// No description provided for @illMomInTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'Mom • In Transit'**
+  String get illMomInTransit;
+
+  /// No description provided for @illLeoAtSchool.
+  ///
+  /// In en, this message translates to:
+  /// **'Leo • At School'**
+  String get illLeoAtSchool;
+
+  /// No description provided for @illHomeZoneSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Zone Safe'**
+  String get illHomeZoneSafe;
+
+  /// No description provided for @illLiveGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Guardian'**
+  String get illLiveGuardian;
+
+  /// No description provided for @illHomeZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Zone'**
+  String get illHomeZone;
+
+  /// No description provided for @illSafeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe & Active'**
+  String get illSafeActive;
+
+  /// No description provided for @illSchoolZone.
+  ///
+  /// In en, this message translates to:
+  /// **'School Zone'**
+  String get illSchoolZone;
+
+  /// No description provided for @illArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived 8:30 AM'**
+  String get illArrived;
+
+  /// No description provided for @illCrashReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Crash Ready'**
+  String get illCrashReady;
+
+  /// No description provided for @illBankLevelSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank-Level Safe'**
+  String get illBankLevelSafe;
+
+  /// No description provided for @illNanaRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Nana Rose'**
+  String get illNanaRose;
+
+  /// No description provided for @illElenaMom.
+  ///
+  /// In en, this message translates to:
+  /// **'Elena (Mom)'**
+  String get illElenaMom;
+
+  /// No description provided for @illMarcus.
+  ///
+  /// In en, this message translates to:
+  /// **'Marcus'**
+  String get illMarcus;
+
+  /// No description provided for @illMayaAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Maya, 7'**
+  String get illMayaAge;
+
+  /// No description provided for @illAnniversary.
+  ///
+  /// In en, this message translates to:
+  /// **'50th Anniv.'**
+  String get illAnniversary;
+
+  /// No description provided for @illTales.
+  ///
+  /// In en, this message translates to:
+  /// **'4 tales'**
+  String get illTales;
+
+  /// No description provided for @illLiveMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Memory Added'**
+  String get illLiveMemory;
 
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to WeFamily'**
+  /// **'Welcome back'**
   String get loginTitle;
 
   /// No description provided for @loginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter your phone number to continue'**
+  /// **'Enter your email to sign in or create your family circle account.'**
   String get loginSubtitle;
+
+  /// No description provided for @encryptedCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'End-to-end encrypted circle'**
+  String get encryptedCircle;
+
+  /// No description provided for @bankGradePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank-Grade Privacy'**
+  String get bankGradePrivacy;
+
+  /// No description provided for @bankGradePrivacyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your family\'s live GPS, chat archives, and photos are encrypted strictly between invited circle members.'**
+  String get bankGradePrivacyBody;
+
+  /// No description provided for @familiesConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Over 240,000 families safely connected'**
+  String get familiesConnected;
+
+  /// No description provided for @termsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to {appName}\'s Terms of Service and Privacy Policy. We protect your family data with bank-level encryption.'**
+  String termsIntro(String appName);
 
   /// No description provided for @phoneHint.
   ///
@@ -295,6 +463,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join circle'**
   String get joinCircle;
+
+  /// No description provided for @myCircles.
+  ///
+  /// In en, this message translates to:
+  /// **'Your circles'**
+  String get myCircles;
+
+  /// No description provided for @joinAnotherCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join or create another circle'**
+  String get joinAnotherCircle;
+
+  /// No description provided for @circleAddSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can be part of more than one family circle. Create a new one or join with an invite code.'**
+  String get circleAddSubtitle;
+
+  /// No description provided for @activeCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeCircle;
+
+  /// No description provided for @switchedCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched to {name}'**
+  String switchedCircle(String name);
 
   /// No description provided for @or.
   ///
@@ -457,6 +655,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get about;
+
+  /// No description provided for @aboutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A few words about this person'**
+  String get aboutHint;
 
   /// No description provided for @relatives.
   ///
@@ -662,6 +866,60 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get relationOther;
 
+  /// No description provided for @relationSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get relationSelf;
+
+  /// No description provided for @relationChild.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get relationChild;
+
+  /// No description provided for @relationParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent'**
+  String get relationParent;
+
+  /// No description provided for @relationSibling.
+  ///
+  /// In en, this message translates to:
+  /// **'Sibling'**
+  String get relationSibling;
+
+  /// No description provided for @relationNephew.
+  ///
+  /// In en, this message translates to:
+  /// **'Nephew'**
+  String get relationNephew;
+
+  /// No description provided for @relationNiece.
+  ///
+  /// In en, this message translates to:
+  /// **'Niece'**
+  String get relationNiece;
+
+  /// No description provided for @relationGrandson.
+  ///
+  /// In en, this message translates to:
+  /// **'Grandson'**
+  String get relationGrandson;
+
+  /// No description provided for @relationGranddaughter.
+  ///
+  /// In en, this message translates to:
+  /// **'Granddaughter'**
+  String get relationGranddaughter;
+
+  /// No description provided for @relationRelative.
+  ///
+  /// In en, this message translates to:
+  /// **'Relative'**
+  String get relationRelative;
+
   /// No description provided for @selectRelation.
   ///
   /// In en, this message translates to:
@@ -679,6 +937,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send a circle invite with this relative'**
   String get inviteToCircleSub;
+
+  /// No description provided for @treeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your family tree is waiting'**
+  String get treeEmpty;
+
+  /// No description provided for @treeEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first relative to start building the tree.'**
+  String get treeEmptyBody;
+
+  /// No description provided for @addFirstRelative.
+  ///
+  /// In en, this message translates to:
+  /// **'Add first relative'**
+  String get addFirstRelative;
+
+  /// No description provided for @addRelativeOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Add relative of {name}'**
+  String addRelativeOf(String name);
+
+  /// No description provided for @editPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit person'**
+  String get editPerson;
+
+  /// No description provided for @deletePerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete person'**
+  String get deletePerson;
+
+  /// No description provided for @deletePersonConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the family tree?'**
+  String deletePersonConfirm(String name);
+
+  /// No description provided for @deletePersonBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This only removes the tree entry, not the circle member.'**
+  String get deletePersonBody;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @birthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get birthday;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get genderOther;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optional;
+
+  /// No description provided for @photoUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo URL'**
+  String get photoUrl;
+
+  /// No description provided for @photoUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/photo.jpg'**
+  String get photoUrlHint;
+
+  /// No description provided for @noPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'No photo yet'**
+  String get noPhotos;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get addPhoto;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get changePhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removePhoto;
+
+  /// No description provided for @linkedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'In your circle'**
+  String get linkedMember;
+
+  /// No description provided for @linkMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a circle member'**
+  String get linkMember;
+
+  /// No description provided for @linkMemberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get linkMemberHint;
+
+  /// No description provided for @notLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in your circle'**
+  String get notLinked;
+
+  /// No description provided for @noRelativesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No relatives added yet'**
+  String get noRelativesYet;
+
+  /// No description provided for @parents.
+  ///
+  /// In en, this message translates to:
+  /// **'Parents'**
+  String get parents;
+
+  /// No description provided for @grandparents.
+  ///
+  /// In en, this message translates to:
+  /// **'Grandparents'**
+  String get grandparents;
+
+  /// No description provided for @children.
+  ///
+  /// In en, this message translates to:
+  /// **'Children'**
+  String get children;
+
+  /// No description provided for @siblings.
+  ///
+  /// In en, this message translates to:
+  /// **'Siblings'**
+  String get siblings;
+
+  /// No description provided for @spouse.
+  ///
+  /// In en, this message translates to:
+  /// **'Spouse'**
+  String get spouse;
+
+  /// No description provided for @otherRelatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Other relatives'**
+  String get otherRelatives;
+
+  /// No description provided for @bornYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Born {year}'**
+  String bornYear(String year);
+
+  /// No description provided for @ageYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{age} years'**
+  String ageYears(String age);
+
+  /// No description provided for @personAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} added to your family tree'**
+  String personAdded(String name);
+
+  /// No description provided for @personUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Family tree updated'**
+  String get personUpdated;
+
+  /// No description provided for @personRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from family tree'**
+  String get personRemoved;
+
+  /// No description provided for @treeSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Please try again.'**
+  String get treeSaveError;
+
+  /// No description provided for @treeDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete. Please try again.'**
+  String get treeDeleteError;
+
+  /// No description provided for @relationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a relation'**
+  String get relationRequired;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get nameRequired;
+
+  /// No description provided for @memberAlreadyLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'That circle member is already in the tree'**
+  String get memberAlreadyLinked;
+
+  /// No description provided for @inviteCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code copied'**
+  String get inviteCodeCopied;
+
+  /// No description provided for @treeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a person to open their profile'**
+  String get treeHint;
+
+  /// No description provided for @treeHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Our family story'**
+  String get treeHeroTitle;
+
+  /// No description provided for @treeHeroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every name has a story. Keep your family legacy alive.'**
+  String get treeHeroBody;
+
+  /// No description provided for @treePeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get treePeople;
+
+  /// No description provided for @treeGenerations.
+  ///
+  /// In en, this message translates to:
+  /// **'Generations'**
+  String get treeGenerations;
+
+  /// No description provided for @treeInCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'In circle'**
+  String get treeInCircle;
+
+  /// No description provided for @generationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation {n}'**
+  String generationLabel(String n);
+
+  /// No description provided for @treeSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No family member found'**
+  String get treeSearchEmpty;
 
   /// No description provided for @loading.
   ///
@@ -841,6 +1399,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Moving'**
   String get moving;
+
+  /// No description provided for @walking.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking'**
+  String get walking;
+
+  /// No description provided for @cycling.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycling'**
+  String get cycling;
+
+  /// No description provided for @atRest.
+  ///
+  /// In en, this message translates to:
+  /// **'At rest'**
+  String get atRest;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activity;
+
+  /// No description provided for @distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// No description provided for @etaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA'**
+  String get etaLabel;
+
+  /// No description provided for @noLocationYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No location yet'**
+  String get noLocationYet;
+
+  /// No description provided for @kmValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} km'**
+  String kmValue(String value);
+
+  /// No description provided for @mValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} m'**
+  String mValue(String value);
+
+  /// No description provided for @minValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} min'**
+  String minValue(String value);
+
+  /// No description provided for @hrMinValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hr {minutes} min'**
+  String hrMinValue(String hours, String minutes);
+
+  /// No description provided for @awayFromYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} from you'**
+  String awayFromYou(String distance);
 
   /// No description provided for @locationNotUpdating.
   ///
@@ -1309,6 +1945,390 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yesterday'**
   String get yesterday;
+
+  /// No description provided for @presenceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your mode'**
+  String get presenceMode;
+
+  /// No description provided for @setMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your mode'**
+  String get setMode;
+
+  /// No description provided for @modeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This shows next to your avatar on the family map.'**
+  String get modeSubtitle;
+
+  /// No description provided for @modeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get modeAuto;
+
+  /// No description provided for @modeDriving.
+  ///
+  /// In en, this message translates to:
+  /// **'Driving'**
+  String get modeDriving;
+
+  /// No description provided for @modeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'At home'**
+  String get modeHome;
+
+  /// No description provided for @modeWork.
+  ///
+  /// In en, this message translates to:
+  /// **'At work'**
+  String get modeWork;
+
+  /// No description provided for @modeOutside.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside'**
+  String get modeOutside;
+
+  /// No description provided for @modeEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'At an event'**
+  String get modeEvent;
+
+  /// No description provided for @modeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode updated'**
+  String get modeUpdated;
+
+  /// No description provided for @modeCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode set to automatic'**
+  String get modeCleared;
+
+  /// No description provided for @modeSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update mode'**
+  String get modeSaveError;
+
+  /// No description provided for @membersOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'{members} members · {online} online'**
+  String membersOnline(int members, int online);
+
+  /// No description provided for @membersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String membersCount(int count);
+
+  /// No description provided for @mapRealistic.
+  ///
+  /// In en, this message translates to:
+  /// **'Realistic'**
+  String get mapRealistic;
+
+  /// No description provided for @onlineNow.
+  ///
+  /// In en, this message translates to:
+  /// **'online'**
+  String get onlineNow;
+
+  /// No description provided for @sosAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} needs help'**
+  String sosAlertTitle(String name);
+
+  /// No description provided for @sosAlertBody.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS was pressed. Their live location is marked in red on the map.'**
+  String get sosAlertBody;
+
+  /// No description provided for @sosActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your SOS is active'**
+  String get sosActiveTitle;
+
+  /// No description provided for @sosActiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your circle has been notified with your exact location.'**
+  String get sosActiveBody;
+
+  /// No description provided for @sosSent.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS sent to your circle'**
+  String get sosSent;
+
+  /// No description provided for @sosCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel SOS'**
+  String get sosCancel;
+
+  /// No description provided for @sosCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS cancelled'**
+  String get sosCancelled;
+
+  /// No description provided for @sosUnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send SOS. Check your connection.'**
+  String get sosUnable;
+
+  /// No description provided for @sosNoLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location unavailable. Turn on GPS and try again.'**
+  String get sosNoLocation;
+
+  /// No description provided for @sosShowOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on map'**
+  String get sosShowOnMap;
+
+  /// No description provided for @sosNotified.
+  ///
+  /// In en, this message translates to:
+  /// **'Your circle will be notified instantly'**
+  String get sosNotified;
+
+  /// No description provided for @sosSentAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {time}'**
+  String sosSentAt(String time);
+
+  /// No description provided for @sosResolveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the SOS alert for everyone?'**
+  String get sosResolveConfirm;
+
+  /// No description provided for @sosRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency alerts'**
+  String get sosRecent;
+
+  /// No description provided for @noAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'No emergency alerts right now'**
+  String get noAlerts;
+
+  /// No description provided for @sosWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your exact location…'**
+  String get sosWaiting;
+
+  /// No description provided for @view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get view;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// No description provided for @chatWithCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with your circle'**
+  String get chatWithCircle;
+
+  /// No description provided for @startConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the conversation — your family will see it instantly.'**
+  String get startConversation;
+
+  /// No description provided for @sayHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello'**
+  String get sayHello;
+
+  /// No description provided for @familyOrbitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Orbit'**
+  String get familyOrbitTitle;
+
+  /// No description provided for @familyMapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Map'**
+  String get familyMapTitle;
+
+  /// No description provided for @familyMapMembersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members · tap a pin to change origin'**
+  String familyMapMembersHint(int count);
+
+  /// No description provided for @familyMapLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get familyMapLive;
+
+  /// No description provided for @familyMapLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortest road route'**
+  String get familyMapLegend;
+
+  /// No description provided for @familyMapFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Distances from'**
+  String get familyMapFrom;
+
+  /// No description provided for @familyMapNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'NEAREST'**
+  String get familyMapNearest;
+
+  /// No description provided for @familyMapFarthest.
+  ///
+  /// In en, this message translates to:
+  /// **'FARTHEST'**
+  String get familyMapFarthest;
+
+  /// No description provided for @familyMapMinDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min drive'**
+  String familyMapMinDrive(int minutes);
+
+  /// No description provided for @familyMapNow.
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get familyMapNow;
+
+  /// No description provided for @familyMapMinAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min ago'**
+  String familyMapMinAgo(int minutes);
+
+  /// No description provided for @familyMapHourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hr ago'**
+  String familyMapHourAgo(int hours);
+
+  /// No description provided for @familyMapDayAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} d ago'**
+  String familyMapDayAgo(int days);
+
+  /// No description provided for @membersRecenter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members · tap anyone to re-center'**
+  String membersRecenter(int count);
+
+  /// No description provided for @backToMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to me'**
+  String get backToMe;
+
+  /// No description provided for @relationPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner'**
+  String get relationPartner;
+
+  /// No description provided for @relationGrandparent.
+  ///
+  /// In en, this message translates to:
+  /// **'Grandparent'**
+  String get relationGrandparent;
+
+  /// No description provided for @relationGrandchild.
+  ///
+  /// In en, this message translates to:
+  /// **'Grandchild'**
+  String get relationGrandchild;
+
+  /// No description provided for @yourRelation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {relation}'**
+  String yourRelation(String relation);
+
+  /// No description provided for @addParent.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Parent'**
+  String get addParent;
+
+  /// No description provided for @addSibling.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Sibling'**
+  String get addSibling;
+
+  /// No description provided for @addPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Partner'**
+  String get addPartner;
+
+  /// No description provided for @addChild.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Child'**
+  String get addChild;
+
+  /// No description provided for @memberAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Member added'**
+  String get memberAdded;
+
+  /// No description provided for @alreadyTwoParents.
+  ///
+  /// In en, this message translates to:
+  /// **'Already has two parents'**
+  String get alreadyTwoParents;
+
+  /// No description provided for @partnerAlready.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner already added'**
+  String get partnerAlready;
+
+  /// No description provided for @treeSiblingNeedsParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a parent first so this sibling can be linked'**
+  String get treeSiblingNeedsParent;
 }
 
 class _AppLocalizationsDelegate

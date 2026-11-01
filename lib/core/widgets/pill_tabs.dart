@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/colors.dart';
 
 class PillTabs extends StatelessWidget {
@@ -37,9 +38,9 @@ class PillTabs extends StatelessWidget {
               child: Text(
                 tabs[index],
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: selected ? Colors.white : AhlColors.inkMedium,
-                      fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                    ),
+                  color: selected ? Colors.white : AhlColors.inkMedium,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                ),
               ),
             ),
           );

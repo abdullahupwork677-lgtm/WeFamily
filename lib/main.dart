@@ -15,8 +15,9 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp();
     if (!AppConfig.useMockData) {
-      FirebaseFirestore.instance.settings =
-          const Settings(persistenceEnabled: true);
+      FirebaseFirestore.instance.settings = const Settings(
+        persistenceEnabled: true,
+      );
     }
   } catch (_) {
     // Run without backend (mock mode) if Firebase config is unavailable.
@@ -33,9 +34,7 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        lastKnownCenterProvider.overrideWithValue(lastKnown),
-      ],
+      overrides: [lastKnownCenterProvider.overrideWithValue(lastKnown)],
       child: const WeFamilyApp(),
     ),
   );

@@ -1,13 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:wefamily/l10n/generated/app_localizations.dart';
 
+import '../../core/services/directions_service.dart';
 import '../../core/theme/colors.dart';
+import '../../core/utils/format_utils.dart';
+import '../../core/utils/member_activity_ui.dart';
 import '../../core/widgets/ahl_card.dart';
 import '../../core/widgets/avatar_circle.dart';
 import '../../data/models/models.dart';
 
-void showMemberDetailSheet(BuildContext context, CircleMember member) {
+void showMemberDetailSheet(
+  BuildContext context,
+  CircleMember member, {
+  LatLng? selfPosition,
+  String? selfUid,
+}) {
   final AppLocalizations l10n = AppLocalizations.of(context);
+  final MemberActivity activity = member.activity;
+  final bool isSelf = selfUid != null && member.uid == selfUid;
+  String? distanceText;
+  if (!isSelf &&
+      selfPosition != null &&
+      member.lat != null &&
+      member.lng != null &&
+      member.isLive) {
+    distanceText = formatDistance(
+      l10n,
+      haversineMeters(selfPosition, LatLng(member.lat!, member.lng!)),
+    );
+  }
 
   showModalBottomSheet<void>(
     context: context,
@@ -32,13 +54,55 @@ void showMemberDetailSheet(BuildContext context, CircleMember member) {
                 ),
               ),
               const SizedBox(height: 20),
-              AvatarCircle(name: member.name, size: 80),
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: isSelf ? AhlColors.primaryGradient : null,
+                  color: isSelf ? null : Colors.white,
+                  boxShadow: AhlColors.softShadowSmall,
+                ),
+                child: AvatarCircle(
+                  name: member.name,
+                  photoUrl: member.photoUrl,
+                  size: 80,
+                ),
+              ),
               const SizedBox(height: 12),
-              Text(member.name, style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                member.name,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 4),
               Text(
                 member.relation,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AhlColors.inkMedium),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: AhlColors.inkMedium),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: activity.color.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(activity.icon, size: 14, color: activity.color),
+                    const SizedBox(width: 4),
+                    Text(
+                      activity.label(l10n),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: activity.color,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               AhlCard(
@@ -50,11 +114,21 @@ void showMemberDetailSheet(BuildContext context, CircleMember member) {
                       label: l10n.places,
                       value: member.placeLabel ?? '—',
                     ),
+                    if (distanceText != null) ...[
+                      const Divider(height: 20),
+                      _InfoRow(
+                        icon: Icons.near_me_outlined,
+                        label: l10n.distance,
+                        value: '~$distanceText',
+                      ),
+                    ],
                     const Divider(height: 20),
                     _InfoRow(
                       icon: Icons.battery_std,
                       label: l10n.battery,
-                      value: member.batteryLevel != null ? '${member.batteryLevel}%' : '—',
+                      value: member.batteryLevel != null
+                          ? '${member.batteryLevel}%'
+                          : '—',
                     ),
                     const Divider(height: 20),
                     _InfoRow(
@@ -99,7 +173,11 @@ void showMemberDetailSheet(BuildContext context, CircleMember member) {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   final IconData icon;
   final String label;
@@ -111,9 +189,21 @@ class _InfoRow extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: AhlColors.primary),
         const SizedBox(width: 12),
-        Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AhlColors.inkMedium)),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(color: AhlColors.inkMedium),
+        ),
         const Spacer(),
-        Text(value, style: Theme.of(context).textTheme.titleMedium),
+        Flexible(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
       ],
     );
   }
@@ -146,13 +236,16 @@ class _ActionBtn extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: primary ? Colors.white : AhlColors.primary),
+            Icon(
+              icon,
+              size: 18,
+              color: primary ? Colors.white : AhlColors.primary,
+            ),
             const SizedBox(width: 8),
             Text(
               label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: primary ? Colors.white : AhlColors.primary,
-                  ),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(color: primary ? Colors.white : AhlColors.primary),
             ),
           ],
         ),

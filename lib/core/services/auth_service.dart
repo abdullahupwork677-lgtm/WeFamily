@@ -11,9 +11,13 @@ final authStateProvider = StreamProvider<User?>((ref) {
 });
 
 /// First auth event with a timeout; null when signed out or unavailable.
-Future<User?> firstAuthUser({Duration timeout = const Duration(seconds: 4)}) async {
+Future<User?> firstAuthUser({
+  Duration timeout = const Duration(seconds: 4),
+}) async {
   try {
-    return await FirebaseAuth.instance.authStateChanges().first.timeout(timeout);
+    return await FirebaseAuth.instance.authStateChanges().first.timeout(
+      timeout,
+    );
   } catch (_) {
     return null;
   }

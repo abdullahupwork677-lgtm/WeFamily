@@ -4,7 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String kLocalePrefKey = 'locale';
 
-final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
+final localeProvider = NotifierProvider<LocaleNotifier, Locale>(
+  LocaleNotifier.new,
+);
 
 class LocaleNotifier extends Notifier<Locale> {
   @override
@@ -28,7 +30,9 @@ class LocaleNotifier extends Notifier<Locale> {
   }
 
   void toggle() {
-    final next = state.languageCode == 'ar' ? const Locale('en') : const Locale('ar');
+    final next = state.languageCode == 'ar'
+        ? const Locale('en')
+        : const Locale('ar');
     setLocale(next);
   }
 }

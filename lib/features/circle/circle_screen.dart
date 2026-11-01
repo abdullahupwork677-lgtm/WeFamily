@@ -12,7 +12,9 @@ import '../../core/widgets/ahl_button.dart';
 import '../../data/repositories/circle_repository.dart';
 
 class CircleScreen extends ConsumerStatefulWidget {
-  const CircleScreen({super.key});
+  const CircleScreen({super.key, this.addMode = false});
+
+  final bool addMode;
 
   @override
   ConsumerState<CircleScreen> createState() => _CircleScreenState();
@@ -82,10 +84,13 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
       }
       setState(() => _loading = true);
       try {
-        final circle = await ref.read(circleRepositoryProvider).joinCircle(
+        final circle = await ref
+            .read(circleRepositoryProvider)
+            .joinCircle(
               code: code,
               uid: uid,
               name: session.user?.name ?? 'Member',
+              photoUrl: session.user?.photoUrl,
             );
         await ref.read(sessionProvider.notifier).adoptCircle(circle);
         if (mounted) context.go('/home');
@@ -150,10 +155,12 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                _tab == 0 ? l10n.createCircleSubtitle : l10n.joinCircleSubtitle,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
+                widget.addMode
+                    ? l10n.circleAddSubtitle
+                    : (_tab == 0
+                          ? l10n.createCircleSubtitle
+                          : l10n.joinCircleSubtitle),
+                style: Theme.of(context).textTheme.bodyLarge
                     ?.copyWith(color: AhlColors.inkMedium),
               ),
               const SizedBox(height: 24),
@@ -194,10 +201,7 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
                   ),
                 ],
               ] else ...[
-                _CodeInput(
-                  controller: _codeController,
-                  enabled: !_loading,
-                ),
+                _CodeInput(controller: _codeController, enabled: !_loading),
                 const SizedBox(height: 24),
                 AhlButton(
                   label: _loading ? '...' : l10n.joinCircle,
@@ -275,9 +279,9 @@ class _CodeInputState extends State<_CodeInput> {
                   child: Text(
                     i < text.length ? text[i] : '',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: AhlColors.ink,
-                        ),
+                      fontWeight: FontWeight.w800,
+                      color: AhlColors.ink,
+                    ),
                   ),
                 ),
               ),
@@ -356,9 +360,8 @@ class _TabPill extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: selected ? Colors.white : AhlColors.ink,
-              ),
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(color: selected ? Colors.white : AhlColors.ink),
         ),
       ),
     );

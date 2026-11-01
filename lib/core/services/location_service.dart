@@ -30,7 +30,9 @@ class LocationService {
     if (!await ensurePermission()) return null;
     try {
       return await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
     } catch (_) {
       return null;
@@ -51,8 +53,9 @@ class LocationService {
   }
 }
 
-final locationServiceProvider =
-    Provider<LocationService>((ref) => LocationService());
+final locationServiceProvider = Provider<LocationService>(
+  (ref) => LocationService(),
+);
 
 /// Cached last known position (from the previous app run), if any.
 /// Overridden in `main()` after reading SharedPreferences.
@@ -98,5 +101,6 @@ final livePositionStreamProvider = Provider<Stream<Position?>>((ref) {
 });
 
 /// Live device position for demo mode.
-final livePositionProvider =
-    StreamProvider<Position?>((ref) => ref.watch(livePositionStreamProvider));
+final livePositionProvider = StreamProvider<Position?>(
+  (ref) => ref.watch(livePositionStreamProvider),
+);

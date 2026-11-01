@@ -13,25 +13,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'WeFamily';
 
   @override
-  String get onboardingTitle1 => 'Stay close to the ones you love';
+  String get splashTagline => 'Your family, safely connected';
+
+  @override
+  String get onboardingBadge1 => 'Live Guardian Mesh';
+
+  @override
+  String get onboardingTitle1 => 'Keep your family close';
 
   @override
   String get onboardingBody1 =>
-      'See where your family is, share your location, and check in — all in one private circle.';
+      'Real-time updates, intelligent geofences, and peace of mind at your fingertips — wherever your loved ones are.';
 
   @override
-  String get onboardingTitle2 => 'Your family tree, alive';
+  String get onboardingTrust1 => 'End-to-end encrypted family circles';
+
+  @override
+  String get onboardingBadge2 => 'Private Family Mesh';
+
+  @override
+  String get onboardingTitle2 => 'Know where everyone is, safely';
 
   @override
   String get onboardingBody2 =>
-      'Build an interactive family tree and connect relatives across generations.';
+      'Bank-grade privacy, instant crash detection, and smart geofence alerts that notify you only when it matters.';
 
   @override
-  String get onboardingTitle3 => 'Safety first, always';
+  String get onboardingTrust2 => '24/7 Guardian protection & zero data selling';
+
+  @override
+  String get onboardingTitle3 => 'Build your family tree together';
 
   @override
   String get onboardingBody3 =>
-      'One-tap SOS and live location sharing keep everyone safe without feeling watched.';
+      'Preserve oral histories, celebrate milestones, and map your shared heritage across every generation.';
+
+  @override
+  String get onboardingHaveAccount => 'Already have an account?';
 
   @override
   String get skip => 'Skip';
@@ -40,13 +58,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get next => 'Next';
 
   @override
-  String get getStarted => 'Get started';
+  String get getStarted => 'Get Started';
 
   @override
-  String get loginTitle => 'Welcome to WeFamily';
+  String get illMomInTransit => 'Mom • In Transit';
 
   @override
-  String get loginSubtitle => 'Enter your phone number to continue';
+  String get illLeoAtSchool => 'Leo • At School';
+
+  @override
+  String get illHomeZoneSafe => 'Home Zone Safe';
+
+  @override
+  String get illLiveGuardian => 'Live Guardian';
+
+  @override
+  String get illHomeZone => 'Home Zone';
+
+  @override
+  String get illSafeActive => 'Safe & Active';
+
+  @override
+  String get illSchoolZone => 'School Zone';
+
+  @override
+  String get illArrived => 'Arrived 8:30 AM';
+
+  @override
+  String get illCrashReady => 'Crash Ready';
+
+  @override
+  String get illBankLevelSafe => 'Bank-Level Safe';
+
+  @override
+  String get illNanaRose => 'Nana Rose';
+
+  @override
+  String get illElenaMom => 'Elena (Mom)';
+
+  @override
+  String get illMarcus => 'Marcus';
+
+  @override
+  String get illMayaAge => 'Maya, 7';
+
+  @override
+  String get illAnniversary => '50th Anniv.';
+
+  @override
+  String get illTales => '4 tales';
+
+  @override
+  String get illLiveMemory => 'Live Memory Added';
+
+  @override
+  String get loginTitle => 'Welcome back';
+
+  @override
+  String get loginSubtitle =>
+      'Enter your email to sign in or create your family circle account.';
+
+  @override
+  String get encryptedCircle => 'End-to-end encrypted circle';
+
+  @override
+  String get bankGradePrivacy => 'Bank-Grade Privacy';
+
+  @override
+  String get bankGradePrivacyBody =>
+      'Your family\'s live GPS, chat archives, and photos are encrypted strictly between invited circle members.';
+
+  @override
+  String get familiesConnected => 'Over 240,000 families safely connected';
+
+  @override
+  String termsIntro(String appName) {
+    return 'By continuing, you agree to $appName\'s Terms of Service and Privacy Policy. We protect your family data with bank-level encryption.';
+  }
 
   @override
   String get phoneHint => 'Phone number';
@@ -115,6 +203,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinCircle => 'Join circle';
+
+  @override
+  String get myCircles => 'Your circles';
+
+  @override
+  String get joinAnotherCircle => 'Join or create another circle';
+
+  @override
+  String get circleAddSubtitle =>
+      'You can be part of more than one family circle. Create a new one or join with an invite code.';
+
+  @override
+  String get activeCircle => 'Active';
+
+  @override
+  String switchedCircle(String name) {
+    return 'Switched to $name';
+  }
 
   @override
   String get or => 'or';
@@ -196,6 +302,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get about => 'About';
+
+  @override
+  String get aboutHint => 'A few words about this person';
 
   @override
   String get relatives => 'Relatives';
@@ -300,6 +409,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get relationOther => 'Other';
 
   @override
+  String get relationSelf => 'You';
+
+  @override
+  String get relationChild => 'Child';
+
+  @override
+  String get relationParent => 'Parent';
+
+  @override
+  String get relationSibling => 'Sibling';
+
+  @override
+  String get relationNephew => 'Nephew';
+
+  @override
+  String get relationNiece => 'Niece';
+
+  @override
+  String get relationGrandson => 'Grandson';
+
+  @override
+  String get relationGranddaughter => 'Granddaughter';
+
+  @override
+  String get relationRelative => 'Relative';
+
+  @override
   String get selectRelation => 'Select relation';
 
   @override
@@ -307,6 +443,171 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteToCircleSub => 'Send a circle invite with this relative';
+
+  @override
+  String get treeEmpty => 'Your family tree is waiting';
+
+  @override
+  String get treeEmptyBody =>
+      'Add your first relative to start building the tree.';
+
+  @override
+  String get addFirstRelative => 'Add first relative';
+
+  @override
+  String addRelativeOf(String name) {
+    return 'Add relative of $name';
+  }
+
+  @override
+  String get editPerson => 'Edit person';
+
+  @override
+  String get deletePerson => 'Delete person';
+
+  @override
+  String deletePersonConfirm(String name) {
+    return 'Remove $name from the family tree?';
+  }
+
+  @override
+  String get deletePersonBody =>
+      'This only removes the tree entry, not the circle member.';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get birthday => 'Birthday';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get photoUrl => 'Photo URL';
+
+  @override
+  String get photoUrlHint => 'https://example.com/photo.jpg';
+
+  @override
+  String get noPhotos => 'No photo yet';
+
+  @override
+  String get addPhoto => 'Add photo';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get linkedMember => 'In your circle';
+
+  @override
+  String get linkMember => 'Link to a circle member';
+
+  @override
+  String get linkMemberHint => 'Optional';
+
+  @override
+  String get notLinked => 'Not in your circle';
+
+  @override
+  String get noRelativesYet => 'No relatives added yet';
+
+  @override
+  String get parents => 'Parents';
+
+  @override
+  String get grandparents => 'Grandparents';
+
+  @override
+  String get children => 'Children';
+
+  @override
+  String get siblings => 'Siblings';
+
+  @override
+  String get spouse => 'Spouse';
+
+  @override
+  String get otherRelatives => 'Other relatives';
+
+  @override
+  String bornYear(String year) {
+    return 'Born $year';
+  }
+
+  @override
+  String ageYears(String age) {
+    return '$age years';
+  }
+
+  @override
+  String personAdded(String name) {
+    return '$name added to your family tree';
+  }
+
+  @override
+  String get personUpdated => 'Family tree updated';
+
+  @override
+  String get personRemoved => 'Removed from family tree';
+
+  @override
+  String get treeSaveError => 'Could not save. Please try again.';
+
+  @override
+  String get treeDeleteError => 'Could not delete. Please try again.';
+
+  @override
+  String get relationRequired => 'Select a relation';
+
+  @override
+  String get nameRequired => 'Enter a name';
+
+  @override
+  String get memberAlreadyLinked => 'That circle member is already in the tree';
+
+  @override
+  String get inviteCodeCopied => 'Invite code copied';
+
+  @override
+  String get treeHint => 'Tap a person to open their profile';
+
+  @override
+  String get treeHeroTitle => 'Our family story';
+
+  @override
+  String get treeHeroBody =>
+      'Every name has a story. Keep your family legacy alive.';
+
+  @override
+  String get treePeople => 'People';
+
+  @override
+  String get treeGenerations => 'Generations';
+
+  @override
+  String get treeInCircle => 'In circle';
+
+  @override
+  String generationLabel(String n) {
+    return 'Generation $n';
+  }
+
+  @override
+  String get treeSearchEmpty => 'No family member found';
 
   @override
   String get loading => 'Loading...';
@@ -389,6 +690,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moving => 'Moving';
+
+  @override
+  String get walking => 'Walking';
+
+  @override
+  String get cycling => 'Cycling';
+
+  @override
+  String get atRest => 'At rest';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get activity => 'Activity';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get etaLabel => 'ETA';
+
+  @override
+  String get noLocationYet => 'No location yet';
+
+  @override
+  String kmValue(String value) {
+    return '$value km';
+  }
+
+  @override
+  String mValue(String value) {
+    return '$value m';
+  }
+
+  @override
+  String minValue(String value) {
+    return '$value min';
+  }
+
+  @override
+  String hrMinValue(String hours, String minutes) {
+    return '$hours hr $minutes min';
+  }
+
+  @override
+  String awayFromYou(String distance) {
+    return '$distance from you';
+  }
 
   @override
   String get locationNotUpdating => 'Location not updating';
@@ -649,4 +999,224 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yesterday => 'Yesterday';
+
+  @override
+  String get presenceMode => 'Your mode';
+
+  @override
+  String get setMode => 'Set your mode';
+
+  @override
+  String get modeSubtitle =>
+      'This shows next to your avatar on the family map.';
+
+  @override
+  String get modeAuto => 'Auto';
+
+  @override
+  String get modeDriving => 'Driving';
+
+  @override
+  String get modeHome => 'At home';
+
+  @override
+  String get modeWork => 'At work';
+
+  @override
+  String get modeOutside => 'Outside';
+
+  @override
+  String get modeEvent => 'At an event';
+
+  @override
+  String get modeUpdated => 'Mode updated';
+
+  @override
+  String get modeCleared => 'Mode set to automatic';
+
+  @override
+  String get modeSaveError => 'Could not update mode';
+
+  @override
+  String membersOnline(int members, int online) {
+    return '$members members · $online online';
+  }
+
+  @override
+  String membersCount(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get mapRealistic => 'Realistic';
+
+  @override
+  String get onlineNow => 'online';
+
+  @override
+  String sosAlertTitle(String name) {
+    return '$name needs help';
+  }
+
+  @override
+  String get sosAlertBody =>
+      'SOS was pressed. Their live location is marked in red on the map.';
+
+  @override
+  String get sosActiveTitle => 'Your SOS is active';
+
+  @override
+  String get sosActiveBody =>
+      'Your circle has been notified with your exact location.';
+
+  @override
+  String get sosSent => 'SOS sent to your circle';
+
+  @override
+  String get sosCancel => 'Cancel SOS';
+
+  @override
+  String get sosCancelled => 'SOS cancelled';
+
+  @override
+  String get sosUnable => 'Could not send SOS. Check your connection.';
+
+  @override
+  String get sosNoLocation =>
+      'Location unavailable. Turn on GPS and try again.';
+
+  @override
+  String get sosShowOnMap => 'Show on map';
+
+  @override
+  String get sosNotified => 'Your circle will be notified instantly';
+
+  @override
+  String sosSentAt(String time) {
+    return 'Sent $time';
+  }
+
+  @override
+  String get sosResolveConfirm => 'Cancel the SOS alert for everyone?';
+
+  @override
+  String get sosRecent => 'Emergency alerts';
+
+  @override
+  String get noAlerts => 'No emergency alerts right now';
+
+  @override
+  String get sosWaiting => 'Getting your exact location…';
+
+  @override
+  String get view => 'View';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get chatWithCircle => 'Chat with your circle';
+
+  @override
+  String get startConversation =>
+      'Start the conversation — your family will see it instantly.';
+
+  @override
+  String get sayHello => 'Say hello';
+
+  @override
+  String get familyOrbitTitle => 'Family Orbit';
+
+  @override
+  String get familyMapTitle => 'Family Map';
+
+  @override
+  String familyMapMembersHint(int count) {
+    return '$count members · tap a pin to change origin';
+  }
+
+  @override
+  String get familyMapLive => 'Live';
+
+  @override
+  String get familyMapLegend => 'Shortest road route';
+
+  @override
+  String get familyMapFrom => 'Distances from';
+
+  @override
+  String get familyMapNearest => 'NEAREST';
+
+  @override
+  String get familyMapFarthest => 'FARTHEST';
+
+  @override
+  String familyMapMinDrive(int minutes) {
+    return '$minutes min drive';
+  }
+
+  @override
+  String get familyMapNow => 'now';
+
+  @override
+  String familyMapMinAgo(int minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String familyMapHourAgo(int hours) {
+    return '$hours hr ago';
+  }
+
+  @override
+  String familyMapDayAgo(int days) {
+    return '$days d ago';
+  }
+
+  @override
+  String membersRecenter(int count) {
+    return '$count members · tap anyone to re-center';
+  }
+
+  @override
+  String get backToMe => 'Back to me';
+
+  @override
+  String get relationPartner => 'Partner';
+
+  @override
+  String get relationGrandparent => 'Grandparent';
+
+  @override
+  String get relationGrandchild => 'Grandchild';
+
+  @override
+  String yourRelation(String relation) {
+    return 'Your $relation';
+  }
+
+  @override
+  String get addParent => '+ Parent';
+
+  @override
+  String get addSibling => '+ Sibling';
+
+  @override
+  String get addPartner => '+ Partner';
+
+  @override
+  String get addChild => '+ Child';
+
+  @override
+  String get memberAdded => 'Member added';
+
+  @override
+  String get alreadyTwoParents => 'Already has two parents';
+
+  @override
+  String get partnerAlready => 'Partner already added';
+
+  @override
+  String get treeSiblingNeedsParent =>
+      'Add a parent first so this sibling can be linked';
 }

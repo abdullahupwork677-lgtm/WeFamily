@@ -19,7 +19,7 @@ class CircleJoinException implements Exception {
 /// adds join-by-code, code rotation and member management on top.
 class CircleRepository {
   CircleRepository({FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+    : _db = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _db;
 
@@ -52,11 +52,12 @@ class CircleRepository {
 
   CircleMember _memberFromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? const <String, dynamic>{};
-    final last = (data['lastLocation'] as Map<String, dynamic>?) ??
+    final last =
+        (data['lastLocation'] as Map<String, dynamic>?) ??
         const <String, dynamic>{};
     final DateTime? updated =
         (last['updatedAt'] as Timestamp?)?.toDate() ??
-            (data['updatedAt'] as Timestamp?)?.toDate();
+        (data['updatedAt'] as Timestamp?)?.toDate();
     final DateTime? sinceAt = (data['sinceAt'] as Timestamp?)?.toDate();
     return CircleMember(
       uid: doc.id,
@@ -72,9 +73,16 @@ class CircleRepository {
       placeLabel: data['placeLabel'] as String?,
       lastUpdated: updated,
       isMoving: (data['isMoving'] as bool?) ?? false,
-      speedKmh: (last['speed'] as num?)?.toDouble(),
+      speedKmh: (last['speed'] as num?) == null
+          ? null
+          : (last['speed'] as num).toDouble() * 3.6,
       headingDeg: (last['heading'] as num?)?.toDouble(),
       sinceAt: sinceAt,
+      presenceMode: presenceModeFromString(data['mode'] as String?),
+      sosActive: (data['sosActive'] as bool?) ?? false,
+      sosLat: (data['sosLat'] as num?)?.toDouble(),
+      sosLng: (data['sosLng'] as num?)?.toDouble(),
+      sosAt: (data['sosAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -83,7 +91,9 @@ class CircleRepository {
         .where('memberUids', arrayContains: uid)
         .limit(1)
         .snapshots()
-        .map((snap) => snap.docs.isEmpty ? null : _circleFromDoc(snap.docs.first));
+        .map(
+          (snap) => snap.docs.isEmpty ? null : _circleFromDoc(snap.docs.first),
+        );
   }
 
   Future<FamilyCircle?> findMyCircle(String uid) async {
@@ -93,6 +103,18 @@ class CircleRepository {
         .get();
     if (snap.docs.isEmpty) return null;
     return _circleFromDoc(snap.docs.first);
+  }
+
+  Stream<List<FamilyCircle>> watchMyCircles(String uid) {
+    return _circles
+        .where('memberUids', arrayContains: uid)
+        .snapshots()
+        .map((snap) => snap.docs.map(_circleFromDoc).toList());
+  }
+
+  Future<List<FamilyCircle>> findMyCircles(String uid) async {
+    final snap = await _circles.where('memberUids', arrayContains: uid).get();
+    return snap.docs.map(_circleFromDoc).toList();
   }
 
   Stream<List<CircleMember>> watchMembers(String circleId) {
@@ -106,6 +128,15 @@ class CircleRepository {
     });
   }
 
+  Future<CircleMember?> fetchMember({
+    required String circleId,
+    required String uid,
+  }) async {
+    final doc = await _members(circleId).doc(uid).get();
+    if (!doc.exists) return null;
+    return _memberFromDoc(doc);
+  }
+
   /// Creates a circle with a unique invite code and registers the owner as a
   /// member. The invite code is reserved in `inviteCodes/{code}` inside the
   /// same transaction.
@@ -113,6 +144,7 @@ class CircleRepository {
     required String ownerUid,
     required String ownerName,
     required String name,
+    String? ownerPhotoUrl,
   }) async {
     final circleRef = _circles.doc();
     for (var attempt = 0; attempt < 6; attempt++) {
@@ -142,6 +174,8 @@ class CircleRepository {
         });
         tx.set(_members(circleRef.id).doc(ownerUid), {
           'name': ownerName,
+          if (ownerPhotoUrl != null && ownerPhotoUrl.isNotEmpty)
+            'photoUrl': ownerPhotoUrl,
           'relation': 'other',
           'role': 'owner',
           'sharingLocation': true,
@@ -161,6 +195,7 @@ class CircleRepository {
     required String code,
     required String uid,
     required String name,
+    String? photoUrl,
   }) async {
     final normalized = code.trim().toUpperCase();
     if (normalized.length != 6) {
@@ -168,8 +203,9 @@ class CircleRepository {
     }
     try {
       return await _db.runTransaction<FamilyCircle>((tx) async {
-        final codeSnap =
-            await tx.get(_db.collection('inviteCodes').doc(normalized));
+        final codeSnap = await tx.get(
+          _db.collection('inviteCodes').doc(normalized),
+        );
         final circleId = (codeSnap.data()?['circleId'] as String?) ?? '';
         if (!codeSnap.exists || circleId.isEmpty) {
           throw const CircleJoinException(CircleJoinFailure.invalidCode);
@@ -193,6 +229,7 @@ class CircleRepository {
         tx.update(circleRef, {'memberUids': updated});
         tx.set(_members(circleId).doc(uid), {
           'name': name,
+          if (photoUrl != null && photoUrl.isNotEmpty) 'photoUrl': photoUrl,
           'relation': 'other',
           'role': 'member',
           'sharingLocation': true,
@@ -339,11 +376,46 @@ class CircleRepository {
     required String circleId,
     required String uid,
     required String name,
+    String? photoUrl,
   }) {
-    return _members(circleId).doc(uid).set(
-      {'name': name},
-      SetOptions(merge: true),
-    );
+    return _members(circleId).doc(uid).set({
+      'name': name,
+      if (photoUrl != null && photoUrl.isNotEmpty) 'photoUrl': photoUrl,
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> updatePresenceMode({
+    required String circleId,
+    required String uid,
+    required PresenceMode? mode,
+  }) {
+    return _members(circleId).doc(uid).set({
+      'mode': mode?.name ?? FieldValue.delete(),
+    }, SetOptions(merge: true));
+  }
+
+  /// Saves an emergency alert pinned to the location where it was triggered.
+  Future<void> triggerSos({
+    required String circleId,
+    required String uid,
+    required double latitude,
+    required double longitude,
+  }) {
+    return _members(circleId).doc(uid).set({
+      'sosActive': true,
+      'sosLat': latitude,
+      'sosLng': longitude,
+      'sosAt': Timestamp.now(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> cancelSos({required String circleId, required String uid}) {
+    return _members(circleId).doc(uid).set({
+      'sosActive': false,
+      'sosLat': FieldValue.delete(),
+      'sosLng': FieldValue.delete(),
+      'sosAt': FieldValue.delete(),
+    }, SetOptions(merge: true));
   }
 
   Future<AppUser?> fetchProfile(String uid) async {
@@ -367,20 +439,24 @@ class CircleRepository {
     String? email,
     String? gender,
     DateTime? birthDate,
+    String? photoUrl,
   }) {
     return _userDoc(uid).set({
       'name': name,
       if (email != null && email.isNotEmpty) 'email': email,
       'gender': ?gender,
       if (birthDate != null) 'birthDate': Timestamp.fromDate(birthDate),
+      if (photoUrl != null && photoUrl.isNotEmpty) 'photoUrl': photoUrl,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
 
   String _randomCode() {
     final random = Random.secure();
-    return List.generate(6, (_) => _codeAlphabet[random.nextInt(_codeAlphabet.length)])
-        .join();
+    return List.generate(
+      6,
+      (_) => _codeAlphabet[random.nextInt(_codeAlphabet.length)],
+    ).join();
   }
 
   String _dateKey(DateTime date) =>
@@ -389,5 +465,6 @@ class CircleRepository {
       '${date.day.toString().padLeft(2, '0')}';
 }
 
-final circleRepositoryProvider =
-    Provider<CircleRepository>((ref) => CircleRepository());
+final circleRepositoryProvider = Provider<CircleRepository>(
+  (ref) => CircleRepository(),
+);

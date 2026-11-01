@@ -34,7 +34,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     } catch (_) {
       // navigate with whatever state we have instead of getting stuck
     }
-    final User? authUser = await firstAuthUser();
+    final User? authUser = await firstAuthUser(
+      timeout: const Duration(seconds: 8),
+    );
     if (authUser != null && !AppConfig.useMockData) {
       try {
         await ref
@@ -52,13 +54,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (!mounted) return;
     final session = ref.read(sessionProvider);
     if (authUser != null) {
-      if (session.hasCircle) {
-        context.go('/home');
-      } else if (session.isLoggedIn) {
-        context.go('/circle');
-      } else {
-        context.go('/profile-setup');
-      }
+      context.go(session.hasCircle ? '/home' : '/circle');
       return;
     }
     if (session.isLoggedIn && session.hasCircle) {
@@ -83,14 +79,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 96,
-              height: 96,
-              decoration: const BoxDecoration(
-                gradient: AhlColors.primaryGradient,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.family_restroom_rounded, size: 48, color: Colors.white),
-            )
+                  width: 96,
+                  height: 96,
+                  decoration: const BoxDecoration(
+                    gradient: AhlColors.primaryGradient,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.family_restroom_rounded,
+                    size: 48,
+                    color: Colors.white,
+                  ),
+                )
                 .animate()
                 .scale(
                   begin: const Offset(0.8, 0.8),
@@ -99,19 +99,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   curve: Curves.easeOutBack,
                 )
                 .then()
-                .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                .shimmer(
+                  duration: 1200.ms,
+                  color: Colors.white.withValues(alpha: 0.3),
+                ),
             const SizedBox(height: 24),
             Text(
               l10n.appName,
-              style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AhlColors.ink,
-                  ),
+              style: Theme.of(context).textTheme.displayMedium
+                  ?.copyWith(fontWeight: FontWeight.w800, color: AhlColors.ink),
             ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
             const SizedBox(height: 8),
             Text(
               'ع · ${l10n.appName}',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AhlColors.inkMedium),
+              style: Theme.of(context).textTheme.bodyLarge
+                  ?.copyWith(color: AhlColors.inkMedium),
             ).animate().fadeIn(delay: 500.ms, duration: 500.ms),
           ],
         ),
@@ -119,4 +121,3 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     );
   }
 }
-
